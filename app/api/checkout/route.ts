@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import {
-  createLemonSqueezyCheckout,
-  getVariantId,
+  getPriceId,
   type PlanTier,
   type BillingInterval,
-} from "@/lib/payments/lemonsqueezy";
+} from "@/lib/payments/paddle";
 
 export const runtime = "nodejs";
 
@@ -14,13 +13,8 @@ interface CheckoutRequestBody {
   billingInterval: BillingInterval;
 }
 
-/**
- * POST /api/checkout
- * Create a LemonSqueezy checkout session
- */
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
     const session = await auth();
 
     if (!session?.user?.id || !session?.user?.email) {
@@ -30,11 +24,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse request body
     const body: CheckoutRequestBody = await request.json();
     const { planTier, billingInterval } = body;
 
-    // Validate plan tier
     if (!["basic", "pro", "enterprise"].includes(planTier)) {
       return NextResponse.json(
         { error: "Invalid plan tier" },
@@ -42,50 +34,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate billing interval
-    if (!["monthly", "annually", "perpetual"].includes(billingInterval)) {
+    if (!["monthly", "ANNUALLY", "perpetual"].includes(billingInterval)) {
       return NextResponse.json(
         { error: "Invalid billing interval" },
         { status: 400 }
       );
     }
 
-    // Get variant ID for the selected plan and billing interval
-    let variantId: string;
+    let priceId: string;
     try {
-      variantId = getVariantId(planTier, billingInterval);
+      priceId = getPriceId(planTier, billingInterval);
     } catch (error) {
-      console.error("Error getting variant ID:", error);
+      console.error("Error getting price ID:", error);
       return NextResponse.json(
         {
           error:
-            "Product variant not configured. Please contact support or check environment variables.",
+            "Product price not configured. Please contact support or check environment variables.",
         },
         { status: 500 }
       );
     }
-    console.log(variantId);
-    
-    // Create checkout session
-    const { checkoutUrl, checkoutId } = await createLemonSqueezyCheckout({
-      variantId,
-      userId: session.user.id,
-      userEmail: session.user.email,
-      planTier,
-      billingInterval,
-    });
 
     return NextResponse.json({
       success: true,
-      checkoutUrl,
-      checkoutId,
+      priceId,
+      userId: session.user.id,
+      customer: {
+        email: session.user.email,
+      },
+      successUrl: `${process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin}/dashboard?checkout=success`,
     });
   } catch (error) {
     console.error("Checkout API error:", error);
 
     return NextResponse.json(
       {
-        error: "Failed to create checkout session",
+        error: "Failed to prepare checkout session",
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }

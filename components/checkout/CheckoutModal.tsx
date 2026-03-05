@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import {
   Dialog,
@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import type { PlanTier, BillingInterval } from "@/lib/payments/lemonsqueezy";
+import type { PlanTier, BillingInterval } from "@/lib/payments/paddle";
+import { getPriceId } from "@/lib/payments/paddle";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -33,13 +34,40 @@ export function CheckoutModal({
   const t = useTranslations('checkout.modal');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
+  const [paddleReady, setPaddleReady] = useState(false);
+
+  useEffect(() => {
+    const checkPaddle = () => {
+      if (window.Paddle) {
+        setPaddleReady(true);
+        return true;
+      }
+      return false;
+    };
+
+    if (!checkPaddle()) {
+      const interval = setInterval(() => {
+        if (checkPaddle()) {
+          clearInterval(interval);
+        }
+      }, 100);
+
+      return () => clearInterval(interval);
+    }
+  }, []);
 
   const handleCheckout = async () => {
+    if (!paddleReady || !window.Paddle) {
+      setError("Paddle is not ready. Please try again.");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
+      const priceId = getPriceId(planTier, billingInterval);
+
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
@@ -63,22 +91,30 @@ export function CheckoutModal({
         throw new Error(data.error || "Failed to create checkout session");
       }
 
-      if (data.checkoutUrl) {
-        setCheckoutUrl(data.checkoutUrl);
+      window.Paddle.Checkout.open({
+        settings: {
+          displayMode: "overlay",
+          theme: "light",
+          locale: "en",
+          successUrl: data.successUrl || `${window.location.origin}/dashboard?checkout=success`,
+        },
+        items: [
+          {
+            priceId: priceId,
+            quantity: 1,
+          },
+        ],
+        customer: data.customer ? {
+          email: data.customer.email,
+        } : undefined,
+        customData: {
+          userId: data.userId,
+          planTier: planTier,
+          billingInterval: billingInterval,
+        },
+      });
 
-        // Open LemonSqueezy checkout in the modal using LemonSqueezy.js
-        if (window.createLemonSqueezy) {
-          window.createLemonSqueezy();
-        }
-
-        // Open the checkout URL in an overlay
-        if (window.LemonSqueezy) {
-          window.LemonSqueezy.Url.Open(data.checkoutUrl);
-        } else {
-          // Fallback: open in new tab if LemonSqueezy.js not loaded
-          window.open(data.checkoutUrl, "_blank");
-        }
-      }
+      onClose();
     } catch (err) {
       console.error("Checkout error:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -88,7 +124,6 @@ export function CheckoutModal({
   };
 
   const handleClose = () => {
-    setCheckoutUrl(null);
     setError(null);
     onClose();
   };
@@ -124,28 +159,26 @@ export function CheckoutModal({
             </div>
           )}
 
-          {!checkoutUrl ? (
-            <Button
-              onClick={handleCheckout}
-              disabled={isLoading}
-              className="w-full"
-              size="lg"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t('button.loading')}
-                </>
-              ) : (
-                t('button.proceed')
-              )}
-            </Button>
-          ) : (
-            <div className="text-center text-sm text-muted-foreground">
-              <p>{t('success.opened')}</p>
-              <p>{t('success.popupBlocked')}</p>
-            </div>
-          )}
+          <Button
+            onClick={handleCheckout}
+            disabled={isLoading || !paddleReady}
+            className="w-full"
+            size="lg"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('button.loading')}
+              </>
+            ) : !paddleReady ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Initializing...
+              </>
+            ) : (
+              t('button.proceed')
+            )}
+          </Button>
 
           <p className="text-center text-xs text-muted-foreground">
             {t('footer')}
@@ -156,18 +189,35 @@ export function CheckoutModal({
   );
 }
 
-// TypeScript declarations for LemonSqueezy global functions
 declare global {
   interface Window {
-    createLemonSqueezy: () => void;
-    LemonSqueezy: {
-      Url: {
-        Open: (url: string) => void;
-        Close: () => void;
+    Paddle?: {
+      Initialize: (config: { token: string }) => void;
+      Environment: {
+        set: (env: "sandbox" | "production") => void;
       };
-      Affiliate: {
-        GetID: () => string;
-        Build: (config: object) => void;
+      Checkout: {
+        open: (options: {
+          settings?: {
+            displayMode?: "overlay" | "inline";
+            theme?: "light" | "dark";
+            locale?: string;
+            successUrl?: string;
+          };
+          items: Array<{
+            priceId: string;
+            quantity: number;
+          }>;
+          customer?: {
+            email?: string;
+            address?: {
+              countryCode?: string;
+              postalCode?: string;
+              region?: string;
+            };
+          };
+          customData?: Record<string, unknown>;
+        }) => void;
       };
     };
   }

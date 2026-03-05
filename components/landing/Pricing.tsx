@@ -9,7 +9,7 @@ import { Check, Loader2 } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import { useCurrency } from '@/hooks/useCurrency'
 import { CheckoutModal } from '@/components/checkout/CheckoutModal'
-import type { PlanTier, BillingInterval } from '@/lib/payments/lemonsqueezy'
+import type { PlanTier, BillingInterval } from '@/lib/payments/paddle'
 
 const pricingData = {
   subscription: {

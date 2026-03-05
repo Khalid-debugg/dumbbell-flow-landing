@@ -4,7 +4,7 @@ import { getMessages } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
 import { Antonio, Inter } from 'next/font/google'
 import { TopLoader } from '@/components/ui/TopLoader'
-import { LemonSqueezyProvider } from '@/components/providers/LemonSqueezyProvider'
+import { PaddleProvider } from '@/components/providers/PaddleProvider'
 import '../globals.css'
 
 const antonio = Antonio({
@@ -51,9 +51,9 @@ export default async function LocaleLayout({ children, params }: Props) {
             enableSystem
             disableTransitionOnChange
           >
-            <LemonSqueezyProvider>
+            <PaddleProvider>
               {children}
-            </LemonSqueezyProvider>
+            </PaddleProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
