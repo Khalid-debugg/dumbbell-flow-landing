@@ -11,13 +11,14 @@ import {
   Copy,
   Download,
   Monitor,
-  Laptop,
   Clock,
   Calendar,
   Zap
 } from 'lucide-react'
 import { VerificationBanner } from '@/components/auth/VerificationBanner'
 import { CloudBackupsSection } from '@/components/dashboard/CloudBackupsSection'
+import { PlatformIcon } from '@/components/ui/PlatformIcon'
+import { formatDate } from '@/lib/utils/format'
 
 interface Device {
   id: string
@@ -62,29 +63,6 @@ export function DashboardContent({ user, devices }: DashboardContentProps) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const getPlatformIcon = (platform: string) => {
-    switch (platform.toLowerCase()) {
-      case 'windows':
-        return <Monitor className="h-5 w-5" />
-      case 'mac':
-      case 'darwin':
-        return <Laptop className="h-5 w-5" />
-      case 'linux':
-        return <Monitor className="h-5 w-5" />
-      default:
-        return <Smartphone className="h-5 w-5" />
-    }
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
 
   return (
     <main className="flex-1">
@@ -126,7 +104,7 @@ export function DashboardContent({ user, devices }: DashboardContentProps) {
                   </div>
                 </div>
                 <Link
-                  href="/pricing"
+                  href={{ pathname: '/', hash: 'pricing' }}
                   className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 font-medium shadow-lg shadow-primary/25"
                 >
                   {t('trial.upgradeButton')}
@@ -275,7 +253,7 @@ export function DashboardContent({ user, devices }: DashboardContentProps) {
                   >
                     <div className="flex items-start gap-4">
                       <div className="p-3 rounded-lg bg-background border border-border text-foreground group-hover:text-primary group-hover:border-primary/30 transition-colors">
-                        {getPlatformIcon(device.platform)}
+                        <PlatformIcon platform={device.platform} />
                       </div>
 
                       <div className="flex-1 min-w-0">

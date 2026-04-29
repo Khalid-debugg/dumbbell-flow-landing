@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Trash2, Monitor, Smartphone, Laptop } from 'lucide-react'
+import { Trash2, Monitor } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { PlatformIcon } from '@/components/ui/PlatformIcon'
+import { formatDate } from '@/lib/utils/format'
 import {
   Card,
   CardContent,
@@ -50,30 +52,6 @@ export function DeviceList({ devices, deviceLimit, devicesUsed }: DeviceListProp
   const t = useTranslations('dashboard.devices')
   const [deactivatingDeviceId, setDeactivatingDeviceId] = useState<string | null>(null)
   const [isDeactivating, setIsDeactivating] = useState(false)
-
-  const getPlatformIcon = (platform: string) => {
-    switch (platform.toLowerCase()) {
-      case 'windows':
-        return <Monitor className="h-5 w-5" />
-      case 'mac':
-      case 'darwin':
-        return <Laptop className="h-5 w-5" />
-      case 'linux':
-        return <Monitor className="h-5 w-5" />
-      default:
-        return <Smartphone className="h-5 w-5" />
-    }
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
 
   const handleDeactivate = async (deviceId: string) => {
     setIsDeactivating(true)
@@ -128,7 +106,7 @@ export function DeviceList({ devices, deviceLimit, devicesUsed }: DeviceListProp
                   className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
                 >
                   <div className="flex items-start gap-3 flex-1">
-                    <div className="mt-1">{getPlatformIcon(device.platform)}</div>
+                    <div className="mt-1"><PlatformIcon platform={device.platform} /></div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium">

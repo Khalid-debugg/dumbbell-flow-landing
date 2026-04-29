@@ -26,10 +26,6 @@ export default async function BillingPage({
       subscriptionType: true,
       planTier: true,
       deviceLimit: true,
-      perpetualLicensePurchasedAt: true,
-      perpetualLicenseUpdatesUntil: true,
-      lemonSqueezyCustomerId: true,
-      lemonSqueezySubscriptionId: true,
       trialEndAt: true,
     },
   });
@@ -68,9 +64,6 @@ export default async function BillingPage({
   const hasActiveSubscription =
     user.subscriptionStatus === "active" &&
     user.subscriptionType === "subscription";
-  const hasPerpetualLicense =
-    user.subscriptionStatus === "active" &&
-    user.subscriptionType === "perpetual";
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -146,32 +139,6 @@ export default async function BillingPage({
               </div>
             )}
 
-            {hasPerpetualLicense && (
-              <div className="rounded-lg border bg-muted/50 p-4">
-                <div className="grid gap-2 md:grid-cols-2">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Purchased On
-                    </p>
-                    <p className="font-medium">
-                      {formatDate(user.perpetualLicensePurchasedAt)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Updates Until
-                    </p>
-                    <p className="font-medium">
-                      {formatDate(user.perpetualLicenseUpdatesUntil)}
-                    </p>
-                  </div>
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Your perpetual license includes 1 year of free updates from
-                  the purchase date.
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
 
@@ -188,27 +155,27 @@ export default async function BillingPage({
           </CardHeader>
           <CardContent className="space-y-3">
             {isTrialActive && (
-              <Link href="/pricing">
+              <Link href={{ pathname: '/', hash: 'pricing' }}>
                 <Button className="w-full" size="lg">
                   Upgrade Now
                 </Button>
               </Link>
             )}
 
-            {hasActiveSubscription && user.lemonSqueezySubscriptionId && (
+            {hasActiveSubscription && (
               <>
-                <Link href="/pricing">
+                <Link href={{ pathname: '/', hash: 'pricing' }}>
                   <Button variant="outline" className="w-full">
                     Change Plan
                   </Button>
                 </Link>
                 <p className="text-sm text-muted-foreground">
                   To manage your billing details, cancel, or view invoices,
-                  please visit the LemonSqueezy customer portal.
+                  please visit the Paddle customer portal.
                 </p>
                 <Button variant="secondary" className="w-full" asChild>
                   <a
-                    href={`https://app.lemonsqueezy.com/my-orders`}
+                    href="https://customer.paddle.com/"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -223,7 +190,7 @@ export default async function BillingPage({
                 <p className="text-sm text-destructive">
                   Your subscription has been cancelled and will expire soon.
                 </p>
-                <Link href="/pricing">
+                <Link href={{ pathname: '/', hash: 'pricing' }}>
                   <Button className="w-full">Reactivate Subscription</Button>
                 </Link>
               </>
@@ -244,7 +211,7 @@ export default async function BillingPage({
                   asChild
                 >
                   <a
-                    href={`https://app.lemonsqueezy.com/my-orders`}
+                    href="https://customer.paddle.com/"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -268,11 +235,11 @@ export default async function BillingPage({
           <CardContent>
             <p className="text-sm text-muted-foreground">
               To view your complete billing history and download invoices,
-              visit the LemonSqueezy customer portal.
+              visit the Paddle customer portal.
             </p>
             <Button variant="outline" className="mt-4 w-full" asChild>
               <a
-                href={`https://app.lemonsqueezy.com/my-orders`}
+                href="https://customer.paddle.com/"
                 target="_blank"
                 rel="noopener noreferrer"
               >

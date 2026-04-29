@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import {
   Cloud,
   Download,
@@ -10,13 +11,13 @@ import {
   Clock,
   RefreshCw,
   Monitor,
-  Laptop,
-  Smartphone,
   ChevronLeft,
   ChevronRight,
   Filter,
   ArrowUpDown
 } from 'lucide-react'
+import { PlatformIcon } from '@/components/ui/PlatformIcon'
+import { formatDate, formatFileSize } from '@/lib/utils/format'
 
 interface CloudBackup {
   id: string
@@ -76,16 +77,8 @@ export function CloudBackupsSection({ licenseKey }: CloudBackupsSectionProps) {
     try {
       const response = await fetch('/api/backups/web-list', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          licenseKey,
-          page,
-          limit: 5,
-          deviceId: selectedDeviceId,
-          sortOrder
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licenseKey, page, limit: 5, deviceId: selectedDeviceId, sortOrder }),
       })
 
       const result = await response.json()
@@ -111,34 +104,25 @@ export function CloudBackupsSection({ licenseKey }: CloudBackupsSectionProps) {
   }, [licenseKey, page, selectedDeviceId, sortOrder])
 
   const handleDelete = async (backupId: string) => {
-    if (!confirm('Are you sure you want to delete this backup?')) {
-      return
-    }
-
     setDeleting(backupId)
     try {
       const response = await fetch('/api/backups/web-delete', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          licenseKey,
-          backupId
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licenseKey, backupId }),
       })
 
       const result = await response.json()
 
       if (result.success) {
-        // Reload backups to refresh pagination
+        toast.success('Backup deleted successfully')
         await loadBackups()
       } else {
-        alert(result.message || 'Failed to delete backup')
+        toast.error(result.message || 'Failed to delete backup')
       }
     } catch (err) {
       console.error('Failed to delete backup:', err)
-      alert('Failed to delete backup')
+      toast.error('Failed to delete backup')
     } finally {
       setDeleting(null)
     }
@@ -163,17 +147,11 @@ export function CloudBackupsSection({ licenseKey }: CloudBackupsSectionProps) {
     try {
       const response = await fetch('/api/backups/web-download', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          licenseKey,
-          backupId: backup.id
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licenseKey, backupId: backup.id }),
       })
 
       if (response.ok) {
-        // Trigger file download
         const blob = await response.blob()
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
@@ -185,40 +163,14 @@ export function CloudBackupsSection({ licenseKey }: CloudBackupsSectionProps) {
         document.body.removeChild(a)
       } else {
         const result = await response.json()
-        alert(result.message || 'Failed to download backup')
+        toast.error(result.message || 'Failed to download backup')
       }
     } catch (err) {
       console.error('Failed to download backup:', err)
-      alert('Failed to download backup')
+      toast.error('Failed to download backup')
     } finally {
       setDownloading(null)
     }
-  }
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 B'
-    const k = 1024
-    const sizes = ['B', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-
-  const getPlatformIcon = (deviceName: string) => {
-    const name = deviceName.toLowerCase()
-    if (name.includes('windows')) return <Monitor className="h-5 w-5" />
-    if (name.includes('mac') || name.includes('darwin')) return <Laptop className="h-5 w-5" />
-    if (name.includes('linux')) return <Monitor className="h-5 w-5" />
-    return <Smartphone className="h-5 w-5" />
   }
 
   return (
@@ -331,7 +283,7 @@ export function CloudBackupsSection({ licenseKey }: CloudBackupsSectionProps) {
                 >
                   <div className="flex items-start gap-4">
                     <div className="p-3 rounded-lg bg-background border border-border text-foreground group-hover:text-blue-600 group-hover:border-blue-500/30 transition-colors">
-                      {getPlatformIcon(backup.deviceName)}
+                      <PlatformIcon platform={backup.deviceName} />
                     </div>
 
                     <div className="flex-1 min-w-0">
