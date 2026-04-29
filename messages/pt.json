@@ -3,13 +3,11 @@
     "modal": {
       "title": {
         "monthly": "Mensal",
-        "annually": "Anual",
-        "perpetual": "Licença Perpétua"
+        "annually": "Anual"
       },
       "description": "Complete sua compra para desbloquear todos os recursos",
       "plan": "Plano",
       "billing": {
-        "oneTime": "Pagamento único",
         "monthly": "Cobrado mensalmente",
         "annually": "Cobrado anualmente"
       },
@@ -105,13 +103,11 @@
       "heading": "Preços Simples e Transparentes",
       "subtitle": "Escolha o plano que se ajusta à sua academia. Todos os planos incluem um teste gratuito de 30 dias.",
       "toggle": {
-        "subscription": "Assinatura",
-        "perpetual": "Licença Perpétua"
+        "subscription": "Assinatura"
       },
       "period": {
         "month": "/mês",
-        "year": "/ano",
-        "oneTime": "pagamento único"
+        "year": "/ano"
       },
       "plans": {
         "basic": {
@@ -127,8 +123,8 @@
           "cta": "Iniciar Teste Gratuito",
           "ctaLoggedIn": "Comprar Agora"
         },
-        "enterprise": {
-          "name": "Enterprise",
+        "premium": {
+          "name": "Premium",
           "description": "Para grandes academias e redes multi-unidades",
           "cta": "Entrar em Contato",
           "ctaLoggedIn": "Comprar Agora"
@@ -138,14 +134,13 @@
         "devices": "Ativações de Dispositivo",
         "devices_basic": "1 Dispositivo",
         "devices_pro": "3 Dispositivos",
-        "devices_enterprise": "Ilimitado",
         "updates": "Atualizações",
         "updates_subscription": "Atualizações regulares",
-        "updates_perpetual": "1 ano de atualizações",
-        "support": "Suporte",
+        "support": {
+          "immediate": "Suporte imediato"
+        },
         "support_basic": "Suporte por email",
         "support_pro": "Email Prioritário",
-        "support_enterprise": "Gerente Dedicado",
         "multilocation": "Multi-Unidade",
         "branding": "Marca Personalizada",
         "api": "Acesso à API",
@@ -170,7 +165,14 @@
           "user_roles": "Funções de Treinador e Recepcionista",
           "priority_support": "Suporte por email prioritário"
         },
-        "enterprise": {
+        "disabled": {
+          "reports": "Relatórios e análises",
+          "payment_tracking": "Rastreamento de pagamentos",
+          "whatsapp": "Notificações de vencimento por WhatsApp",
+          "financial_dashboard": "Painel financeiro",
+          "advanced_permissions": "Permissões avançadas e funções personalizadas"
+        },
+        "premium": {
           "financial_dashboard": "Painel financeiro e análise de receita",
           "unlimited_devices": "Ativações de dispositivo ilimitadas",
           "advanced_permissions": "Permissões avançadas e funções personalizadas",
@@ -183,17 +185,8 @@
           "multi_currency": "Suporte multi-moeda",
           "dedicated_support": "Suporte dedicado e integração"
         },
-        "disabled": {
-          "reports": "Relatórios e análises",
-          "payment_tracking": "Rastreamento de pagamentos",
-          "whatsapp": "Notificações de vencimento por WhatsApp",
-          "financial_dashboard": "Painel financeiro",
-          "advanced_permissions": "Permissões avançadas e funções personalizadas"
-        },
-        "support": {
-          "immediate": "Suporte imediato",
-          "within_24hrs": "Suporte em 24 horas"
-        }
+        "devices_premium": "Ilimitado",
+        "support_premium": "Gerente Dedicado"
       },
       "note": "Todos os planos incluem um teste gratuito de 30 dias. Não é necessário cartão de crédito."
     },
@@ -280,7 +273,7 @@
         "description": "Junte-se a milhares de donos de academias que confiam no Dumbbellflow para otimizar operações e crescer seus negócios.",
         "features": {
           "feature1": "Teste grátis de 30 dias",
-          "feature2": "Sem necessidade de cartão",
+          "feature2": "Não é necessário cartão de crédito",
           "feature3": "Cancele a qualquer momento"
         }
       }

@@ -3,13 +3,11 @@
     "modal": {
       "title": {
         "monthly": "Monatlich",
-        "annually": "Jährlich",
-        "perpetual": "Unbefristete Lizenz"
+        "annually": "Jährlich"
       },
       "description": "Schließen Sie Ihren Kauf ab, um alle Funktionen freizuschalten",
       "plan": "Plan",
       "billing": {
-        "oneTime": "Einmalige Zahlung",
         "monthly": "Monatlich abgerechnet",
         "annually": "Jährlich abgerechnet"
       },
@@ -105,13 +103,11 @@
       "heading": "Einfache, Transparente Preise",
       "subtitle": "Wählen Sie den Plan, der zu Ihrem Fitnessstudio passt. Alle Pläne beinhalten eine 30-tägige kostenlose Testversion.",
       "toggle": {
-        "subscription": "Abonnement",
-        "perpetual": "Unbefristete Lizenz"
+        "subscription": "Abonnement"
       },
       "period": {
         "month": "/Monat",
-        "year": "/Jahr",
-        "oneTime": "einmalig"
+        "year": "/Jahr"
       },
       "plans": {
         "basic": {
@@ -127,8 +123,8 @@
           "cta": "Kostenlose Testversion Starten",
           "ctaLoggedIn": "Jetzt Kaufen"
         },
-        "enterprise": {
-          "name": "Enterprise",
+        "premium": {
+          "name": "Premium",
           "description": "Für große Studios und Ketten mit mehreren Standorten",
           "cta": "Vertrieb Kontaktieren",
           "ctaLoggedIn": "Jetzt Kaufen"
@@ -138,14 +134,13 @@
         "devices": "Geräte-Aktivierungen",
         "devices_basic": "1 Gerät",
         "devices_pro": "3 Geräte",
-        "devices_enterprise": "Unbegrenzt",
         "updates": "Updates",
         "updates_subscription": "Regelmäßige Updates",
-        "updates_perpetual": "1 Jahr Updates",
-        "support": "Support",
+        "support": {
+          "immediate": "Sofortiger Support"
+        },
         "support_basic": "E-Mail-Support",
         "support_pro": "Prioritäts-E-Mail",
-        "support_enterprise": "Dedizierter Manager",
         "multilocation": "Mehrere Standorte",
         "branding": "Individuelles Branding",
         "api": "API-Zugriff",
@@ -170,7 +165,14 @@
           "user_roles": "Trainer- und Empfangsrollen",
           "priority_support": "Prioritäts-E-Mail-Support"
         },
-        "enterprise": {
+        "disabled": {
+          "reports": "Berichte und Analysen",
+          "payment_tracking": "Zahlungsverfolgung",
+          "whatsapp": "WhatsApp-Ablaufbenachrichtigungen",
+          "financial_dashboard": "Finanzdashboard",
+          "advanced_permissions": "Erweiterte Berechtigungen und benutzerdefinierte Rollen"
+        },
+        "premium": {
           "financial_dashboard": "Finanzdashboard und Umsatzanalysen",
           "unlimited_devices": "Unbegrenzte Geräteaktivierungen",
           "advanced_permissions": "Erweiterte Berechtigungen und benutzerdefinierte Rollen",
@@ -183,17 +185,8 @@
           "multi_currency": "Mehrwährungsunterstützung",
           "dedicated_support": "Dedizierter Support und Onboarding"
         },
-        "disabled": {
-          "reports": "Berichte und Analysen",
-          "payment_tracking": "Zahlungsverfolgung",
-          "whatsapp": "WhatsApp-Ablaufbenachrichtigungen",
-          "financial_dashboard": "Finanzdashboard",
-          "advanced_permissions": "Erweiterte Berechtigungen und benutzerdefinierte Rollen"
-        },
-        "support": {
-          "immediate": "Sofortiger Support",
-          "within_24hrs": "Support innerhalb von 24 Stunden"
-        }
+        "devices_premium": "Unbegrenzt",
+        "support_premium": "Dedizierter Manager"
       },
       "note": "Alle Pläne beinhalten eine 30-tägige kostenlose Testversion. Keine Kreditkarte erforderlich."
     },

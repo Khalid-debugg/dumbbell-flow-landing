@@ -3,13 +3,11 @@
     "modal": {
       "title": {
         "monthly": "Monthly",
-        "annually": "annually",
-        "perpetual": "Perpetual License"
+        "annually": "annually"
       },
       "description": "Complete your purchase to unlock all features",
       "plan": "Plan",
       "billing": {
-        "oneTime": "One-time payment",
         "monthly": "Billed monthly",
         "annually": "Billed annually"
       },
@@ -105,13 +103,11 @@
       "heading": "Simple, Transparent Pricing",
       "subtitle": "Choose the plan that fits your gym. All plans include a 30-day free trial.",
       "toggle": {
-        "subscription": "Subscription",
-        "perpetual": "Perpetual License"
+        "subscription": "Subscription"
       },
       "period": {
         "month": "/month",
-        "year": "/year",
-        "oneTime": "one-time"
+        "year": "/year"
       },
       "plans": {
         "basic": {
@@ -127,8 +123,8 @@
           "cta": "Start Free Trial",
           "ctaLoggedIn": "Buy Now"
         },
-        "enterprise": {
-          "name": "Enterprise",
+        "premium": {
+          "name": "Premium",
           "description": "For large gyms and multi-location chains",
           "cta": "Contact Sales",
           "ctaLoggedIn": "Buy Now"
@@ -138,14 +134,13 @@
         "devices": "Device Activations",
         "devices_basic": "1 Device",
         "devices_pro": "3 Devices",
-        "devices_enterprise": "Unlimited",
         "updates": "Updates",
         "updates_subscription": "Regular updates",
-        "updates_perpetual": "1 year of updates",
-        "support": "Support",
+        "support": {
+          "immediate": "Immediate support"
+        },
         "support_basic": "Email support",
         "support_pro": "Priority Email",
-        "support_enterprise": "Dedicated Manager",
         "multilocation": "Multi-Location",
         "branding": "Custom Branding",
         "api": "API Access",
@@ -170,7 +165,14 @@
           "user_roles": "Coach & Receptionist roles",
           "priority_support": "Priority email support"
         },
-        "enterprise": {
+        "disabled": {
+          "reports": "Reports & analytics",
+          "payment_tracking": "Payment tracking",
+          "whatsapp": "WhatsApp expiry notifications",
+          "financial_dashboard": "Financial dashboard",
+          "advanced_permissions": "Advanced permissions & custom roles"
+        },
+        "premium": {
           "financial_dashboard": "Financial dashboard & revenue analytics",
           "unlimited_devices": "Unlimited device activations",
           "advanced_permissions": "Advanced permissions & custom roles",
@@ -183,17 +185,8 @@
           "multi_currency": "Multi-currency support",
           "dedicated_support": "Dedicated support & onboarding"
         },
-        "disabled": {
-          "reports": "Reports & analytics",
-          "payment_tracking": "Payment tracking",
-          "whatsapp": "WhatsApp expiry notifications",
-          "financial_dashboard": "Financial dashboard",
-          "advanced_permissions": "Advanced permissions & custom roles"
-        },
-        "support": {
-          "immediate": "Immediate support",
-          "within_24hrs": "Support within 24 hours"
-        }
+        "devices_premium": "Unlimited",
+        "support_premium": "Dedicated Manager"
       },
       "note": "All plans include a 30-day free trial. No credit card required."
     },

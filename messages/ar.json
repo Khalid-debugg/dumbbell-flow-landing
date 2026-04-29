@@ -3,13 +3,11 @@
     "modal": {
       "title": {
         "monthly": "شهري",
-        "annually": "سنوي",
-        "perpetual": "ترخيص دائم"
+        "annually": "سنوي"
       },
       "description": "أكمل عملية الشراء لفتح جميع الميزات",
       "plan": "خطة",
       "billing": {
-        "oneTime": "دفعة واحدة",
         "monthly": "الفواتير شهرياً",
         "annually": "الفواتير سنوياً"
       },
@@ -105,13 +103,11 @@
       "heading": "أسعار بسيطة وشفافة",
       "subtitle": "اختر الخطة التي تناسب ناديك. تتضمن جميع الخطط نسخة تجريبية مجانية لمدة 30 يومًا.",
       "toggle": {
-        "subscription": "اشتراك",
-        "perpetual": "ترخيص دائم"
+        "subscription": "اشتراك"
       },
       "period": {
         "month": "/شهر",
-        "year": "/سنة",
-        "oneTime": "دفعة واحدة"
+        "year": "/سنة"
       },
       "plans": {
         "basic": {
@@ -127,8 +123,8 @@
           "cta": "ابدأ النسخة التجريبية المجانية",
           "ctaLoggedIn": "اشترِ الآن"
         },
-        "enterprise": {
-          "name": "للشركات",
+        "premium": {
+          "name": "إستثنائى",
           "description": "للصالات الرياضية الكبيرة والسلاسل متعددة المواقع",
           "cta": "اتصل بالمبيعات",
           "ctaLoggedIn": "اشترِ الآن"
@@ -138,14 +134,13 @@
         "devices": "تفعيل الأجهزة",
         "devices_basic": "جهاز واحد",
         "devices_pro": "3 أجهزة",
-        "devices_enterprise": "غير محدود",
         "updates": "التحديثات",
         "updates_subscription": "تحديثات منتظمة",
-        "updates_perpetual": "سنة واحدة من التحديثات",
-        "support": "الدعم",
+        "support": {
+          "immediate": "دعم فوري"
+        },
         "support_basic": "دعم البريد الإلكتروني",
         "support_pro": "بريد إلكتروني بالأولوية",
-        "support_enterprise": "مدير مخصص",
         "multilocation": "مواقع متعددة",
         "branding": "علامة تجارية مخصصة",
         "api": "وصول API",
@@ -170,7 +165,14 @@
           "user_roles": "أدوار المدرب والموظف",
           "priority_support": "دعم بريد إلكتروني بالأولوية"
         },
-        "enterprise": {
+        "disabled": {
+          "reports": "التقارير والتحليلات",
+          "payment_tracking": "تتبع المدفوعات",
+          "whatsapp": "إشعارات انتهاء الصلاحية عبر واتساب",
+          "financial_dashboard": "لوحة المعلومات المالية",
+          "advanced_permissions": "صلاحيات متقدمة وأدوار مخصصة"
+        },
+        "premium": {
           "financial_dashboard": "لوحة المعلومات المالية وتحليلات الإيرادات",
           "unlimited_devices": "تفعيلات أجهزة غير محدودة",
           "advanced_permissions": "صلاحيات متقدمة وأدوار مخصصة",
@@ -183,17 +185,8 @@
           "multi_currency": "دعم عملات متعددة",
           "dedicated_support": "دعم مخصص وتدريب"
         },
-        "disabled": {
-          "reports": "التقارير والتحليلات",
-          "payment_tracking": "تتبع المدفوعات",
-          "whatsapp": "إشعارات انتهاء الصلاحية عبر واتساب",
-          "financial_dashboard": "لوحة المعلومات المالية",
-          "advanced_permissions": "صلاحيات متقدمة وأدوار مخصصة"
-        },
-        "support": {
-          "immediate": "دعم فوري",
-          "within_24hrs": "دعم خلال 24 ساعة"
-        }
+        "devices_premium": "غير محدود",
+        "support_premium": "مدير مخصص"
       },
       "note": "جميع الخطط تتضمن نسخة تجريبية مجانية لمدة 30 يومًا. لا حاجة لبطاقة ائتمان."
     },

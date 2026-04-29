@@ -3,13 +3,11 @@
     "modal": {
       "title": {
         "monthly": "Mensuel",
-        "annually": "Annuel",
-        "perpetual": "Licence Perpétuelle"
+        "annually": "Annuel"
       },
       "description": "Finalisez votre achat pour débloquer toutes les fonctionnalités",
       "plan": "Plan",
       "billing": {
-        "oneTime": "Paiement unique",
         "monthly": "Facturé mensuellement",
         "annually": "Facturé annuellement"
       },
@@ -105,13 +103,11 @@
       "heading": "Tarifs Simples et Transparents",
       "subtitle": "Choisissez le forfait qui convient à votre salle de sport. Tous les forfaits incluent un essai gratuit de 30 jours.",
       "toggle": {
-        "subscription": "Abonnement",
-        "perpetual": "Licence Perpétuelle"
+        "subscription": "Abonnement"
       },
       "period": {
         "month": "/mois",
-        "year": "/an",
-        "oneTime": "paiement unique"
+        "year": "/an"
       },
       "plans": {
         "basic": {
@@ -127,8 +123,8 @@
           "cta": "Démarrer l'Essai Gratuit",
           "ctaLoggedIn": "Acheter Maintenant"
         },
-        "enterprise": {
-          "name": "Enterprise",
+        "premium": {
+          "name": "Premium",
           "description": "Pour les grandes salles et les chaînes multi-sites",
           "cta": "Contacter les Ventes",
           "ctaLoggedIn": "Acheter Maintenant"
@@ -138,14 +134,13 @@
         "devices": "Activations d'Appareils",
         "devices_basic": "1 Appareil",
         "devices_pro": "3 Appareils",
-        "devices_enterprise": "Illimité",
         "updates": "Mises à Jour",
         "updates_subscription": "Mises à jour régulières",
-        "updates_perpetual": "1 an de mises à jour",
-        "support": "Support",
+        "support": {
+          "immediate": "Support immédiat"
+        },
         "support_basic": "Support par e-mail",
         "support_pro": "Email Prioritaire",
-        "support_enterprise": "Gestionnaire Dédié",
         "multilocation": "Multi-Sites",
         "branding": "Image de Marque Personnalisée",
         "api": "Accès API",
@@ -170,7 +165,14 @@
           "user_roles": "Rôles Coach et Réceptionniste",
           "priority_support": "Support par e-mail prioritaire"
         },
-        "enterprise": {
+        "disabled": {
+          "reports": "Rapports et analyses",
+          "payment_tracking": "Suivi des paiements",
+          "whatsapp": "Notifications d'expiration WhatsApp",
+          "financial_dashboard": "Tableau de bord financier",
+          "advanced_permissions": "Permissions avancées et rôles personnalisés"
+        },
+        "premium": {
           "financial_dashboard": "Tableau de bord financier et analyse des revenus",
           "unlimited_devices": "Activations d'appareils illimitées",
           "advanced_permissions": "Permissions avancées et rôles personnalisés",
@@ -183,17 +185,8 @@
           "multi_currency": "Support multi-devises",
           "dedicated_support": "Support dédié et intégration"
         },
-        "disabled": {
-          "reports": "Rapports et analyses",
-          "payment_tracking": "Suivi des paiements",
-          "whatsapp": "Notifications d'expiration WhatsApp",
-          "financial_dashboard": "Tableau de bord financier",
-          "advanced_permissions": "Permissions avancées et rôles personnalisés"
-        },
-        "support": {
-          "immediate": "Support immédiat",
-          "within_24hrs": "Support sous 24 heures"
-        }
+        "devices_premium": "Illimité",
+        "support_premium": "Gestionnaire Dédié"
       },
       "note": "Tous les forfaits incluent un essai gratuit de 30 jours. Aucune carte bancaire requise."
     },

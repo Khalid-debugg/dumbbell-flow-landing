@@ -3,13 +3,11 @@
     "modal": {
       "title": {
         "monthly": "Mensual",
-        "annually": "Anual",
-        "perpetual": "Licencia Perpetua"
+        "annually": "Anual"
       },
       "description": "Completa tu compra para desbloquear todas las funciones",
       "plan": "Plan",
       "billing": {
-        "oneTime": "Pago único",
         "monthly": "Facturado mensualmente",
         "annually": "Facturado anualmente"
       },
@@ -105,13 +103,11 @@
       "heading": "Precios Simples y Transparentes",
       "subtitle": "Elige el plan que se ajuste a tu gimnasio. Todos los planes incluyen una prueba gratuita de 30 días.",
       "toggle": {
-        "subscription": "Suscripción",
-        "perpetual": "Licencia Perpetua"
+        "subscription": "Suscripción"
       },
       "period": {
         "month": "/mes",
-        "year": "/año",
-        "oneTime": "pago único"
+        "year": "/año"
       },
       "plans": {
         "basic": {
@@ -127,8 +123,8 @@
           "cta": "Iniciar Prueba Gratuita",
           "ctaLoggedIn": "Comprar Ahora"
         },
-        "enterprise": {
-          "name": "Enterprise",
+        "premium": {
+          "name": "Premium",
           "description": "Para gimnasios grandes y cadenas multisede",
           "cta": "Contactar Ventas",
           "ctaLoggedIn": "Comprar Ahora"
@@ -138,14 +134,13 @@
         "devices": "Activaciones de Dispositivo",
         "devices_basic": "1 Dispositivo",
         "devices_pro": "3 Dispositivos",
-        "devices_enterprise": "Ilimitado",
         "updates": "Actualizaciones",
         "updates_subscription": "Actualizaciones regulares",
-        "updates_perpetual": "1 año de actualizaciones",
-        "support": "Soporte",
+        "support": {
+          "immediate": "Soporte inmediato"
+        },
         "support_basic": "Soporte por email",
         "support_pro": "Email Prioritario",
-        "support_enterprise": "Gestor Dedicado",
         "multilocation": "Multisede",
         "branding": "Marca Personalizada",
         "api": "Acceso API",
@@ -170,7 +165,14 @@
           "user_roles": "Roles de Entrenador y Recepcionista",
           "priority_support": "Soporte por email prioritario"
         },
-        "enterprise": {
+        "disabled": {
+          "reports": "Informes y análisis",
+          "payment_tracking": "Seguimiento de pagos",
+          "whatsapp": "Notificaciones de vencimiento por WhatsApp",
+          "financial_dashboard": "Panel financiero",
+          "advanced_permissions": "Permisos avanzados y roles personalizados"
+        },
+        "premium": {
           "financial_dashboard": "Panel financiero y análisis de ingresos",
           "unlimited_devices": "Activaciones de dispositivo ilimitadas",
           "advanced_permissions": "Permisos avanzados y roles personalizados",
@@ -183,17 +185,8 @@
           "multi_currency": "Soporte multimoneda",
           "dedicated_support": "Soporte dedicado e incorporación"
         },
-        "disabled": {
-          "reports": "Informes y análisis",
-          "payment_tracking": "Seguimiento de pagos",
-          "whatsapp": "Notificaciones de vencimiento por WhatsApp",
-          "financial_dashboard": "Panel financiero",
-          "advanced_permissions": "Permisos avanzados y roles personalizados"
-        },
-        "support": {
-          "immediate": "Soporte inmediato",
-          "within_24hrs": "Soporte en 24 horas"
-        }
+        "devices_premium": "Ilimitado",
+        "support_premium": "Gestor Dedicado"
       },
       "note": "Todos los planes incluyen una prueba gratuita de 30 días. No se requiere tarjeta de crédito."
     },
@@ -280,7 +273,7 @@
         "description": "Únete a miles de propietarios de gimnasios que confían en Dumbbellflow para optimizar operaciones y hacer crecer su negocio.",
         "features": {
           "feature1": "Prueba gratuita de 30 días",
-          "feature2": "No requiere tarjeta de crédito",
+          "feature2": "No se requiere tarjeta de crédito",
           "feature3": "Cancela en cualquier momento"
         }
       }
