@@ -74,6 +74,7 @@ export function Hero({ user }: HeroProps = {}) {
                     src="/hero-gym-image.jpg"
                     alt="Gym workout"
                     fill
+                    sizes="(max-width: 1024px) 75vw, 448px"
                     className="object-cover"
                     priority
                   />
