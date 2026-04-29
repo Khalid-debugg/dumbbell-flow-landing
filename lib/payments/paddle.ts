@@ -1,14 +1,15 @@
-export const PRODUCT_PRICES = {
-  BASIC_MONTHLY: process.env.NEXT_PUBLIC_PADDLE_PRICE_BASIC_MONTHLY || "",
-  BASIC_ANNUALLY: process.env.NEXT_PUBLIC_PADDLE_PRICE_BASIC_ANNUALLY || "",
-  PRO_MONTHLY: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO_MONTHLY || "",
-  PRO_ANNUALLY: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO_ANNUALLY || "",
-  ENTERPRISE_MONTHLY: process.env.NEXT_PUBLIC_PADDLE_PRICE_ENTERPRISE_MONTHLY || "",
-  ENTERPRISE_ANNUALLY: process.env.NEXT_PUBLIC_PADDLE_PRICE_ENTERPRISE_ANNUALLY || "",
+const isSandbox =
+  (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || "sandbox") === "sandbox";
 
-  BASIC_PERPETUAL: process.env.NEXT_PUBLIC_PADDLE_PRICE_BASIC_PERPETUAL || "",
-  PRO_PERPETUAL: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO_PERPETUAL || "",
-  ENTERPRISE_PERPETUAL: process.env.NEXT_PUBLIC_PADDLE_PRICE_ENTERPRISE_PERPETUAL || "",
+const env = isSandbox ? "SANDBOX" : "PRODUCTION";
+
+export const PRODUCT_PRICES = {
+  BASIC_MONTHLY:   process.env[`NEXT_PUBLIC_PADDLE_PRICE_BASIC_MONTHLY_${env}`]   || "",
+  BASIC_ANNUALLY:  process.env[`NEXT_PUBLIC_PADDLE_PRICE_BASIC_ANNUALLY_${env}`]  || "",
+  PRO_MONTHLY:     process.env[`NEXT_PUBLIC_PADDLE_PRICE_PRO_MONTHLY_${env}`]     || "",
+  PRO_ANNUALLY:    process.env[`NEXT_PUBLIC_PADDLE_PRICE_PRO_ANNUALLY_${env}`]    || "",
+  PREMIUM_MONTHLY: process.env[`NEXT_PUBLIC_PADDLE_PRICE_PREMIUM_MONTHLY_${env}`] || "",
+  PREMIUM_ANNUALLY:process.env[`NEXT_PUBLIC_PADDLE_PRICE_PREMIUM_ANNUALLY_${env}`]|| "",
 };
 
 export const PLAN_CONFIG = {
@@ -16,42 +17,34 @@ export const PLAN_CONFIG = {
     name: "Basic",
     deviceLimit: 1,
     monthly: PRODUCT_PRICES.BASIC_MONTHLY,
-    ANNUALLY: PRODUCT_PRICES.BASIC_ANNUALLY,
-    perpetual: PRODUCT_PRICES.BASIC_PERPETUAL,
+    annually: PRODUCT_PRICES.BASIC_ANNUALLY,
   },
   pro: {
     name: "Pro",
-    deviceLimit: 3,
+    deviceLimit: 5,
     monthly: PRODUCT_PRICES.PRO_MONTHLY,
-    ANNUALLY: PRODUCT_PRICES.PRO_ANNUALLY,
-    perpetual: PRODUCT_PRICES.PRO_PERPETUAL,
+    annually: PRODUCT_PRICES.PRO_ANNUALLY,
   },
-  enterprise: {
-    name: "Enterprise",
+  premium: {
+    name: "Premium",
     deviceLimit: 999999,
-    monthly: PRODUCT_PRICES.ENTERPRISE_MONTHLY,
-    ANNUALLY: PRODUCT_PRICES.ENTERPRISE_ANNUALLY,
-    perpetual: PRODUCT_PRICES.ENTERPRISE_PERPETUAL,
+    monthly: PRODUCT_PRICES.PREMIUM_MONTHLY,
+    annually: PRODUCT_PRICES.PREMIUM_ANNUALLY,
   },
 };
 
 export type PlanTier = keyof typeof PLAN_CONFIG;
-export type BillingInterval = "monthly" | "ANNUALLY" | "perpetual";
+export type BillingInterval = "monthly" | "annually";
 
 export function getPriceId(
   planTier: PlanTier,
   billingInterval: BillingInterval
 ): string {
   const plan = PLAN_CONFIG[planTier];
-
-  if (!plan) {
-    throw new Error(`Invalid plan tier: ${planTier}`);
-  }
-
   const priceId = plan[billingInterval];
 
   if (!priceId) {
-    throw new Error(`No price ID found for ${planTier} ${billingInterval}`);
+    throw new Error(`No price ID configured for ${planTier} ${billingInterval} (${env})`);
   }
 
   return priceId;
@@ -71,16 +64,15 @@ export interface PaddleCheckoutOptions {
 }
 
 export function getClientToken(): string {
-  const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || "";
+  const token = process.env[`NEXT_PUBLIC_PADDLE_CLIENT_TOKEN_${env}`] || "";
 
   if (!token) {
-    throw new Error("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN is not set in environment variables");
+    throw new Error(`NEXT_PUBLIC_PADDLE_CLIENT_TOKEN_${env} is not set`);
   }
 
   return token;
 }
 
 export function getEnvironment(): "sandbox" | "production" {
-  const env = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || "production";
-  return env === "sandbox" ? "sandbox" : "production";
+  return isSandbox ? "sandbox" : "production";
 }
