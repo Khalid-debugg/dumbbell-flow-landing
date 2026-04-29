@@ -5,8 +5,40 @@ import {
   type PlanTier,
   type BillingInterval,
 } from "@/lib/payments/paddle";
+import { prisma } from "@/lib/db/prisma";
 
 export const runtime = "nodejs";
+
+export async function GET() {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please sign in." },
+        { status: 401 }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { subscriptionStatus: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      trialEligible: user.subscriptionStatus === "trial",
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to check trial eligibility" },
+      { status: 500 }
+    );
+  }
+}
 
 interface CheckoutRequestBody {
   planTier: PlanTier;
@@ -24,17 +56,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { subscriptionStatus: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const trialEligible = user.subscriptionStatus === "trial";
+
     const body: CheckoutRequestBody = await request.json();
     const { planTier, billingInterval } = body;
 
-    if (!["basic", "pro", "enterprise"].includes(planTier)) {
+    if (!["basic", "pro", "premium"].includes(planTier)) {
       return NextResponse.json(
         { error: "Invalid plan tier" },
         { status: 400 }
       );
     }
 
-    if (!["monthly", "ANNUALLY", "perpetual"].includes(billingInterval)) {
+    if (!["monthly", "annually"].includes(billingInterval)) {
       return NextResponse.json(
         { error: "Invalid billing interval" },
         { status: 400 }
@@ -58,6 +101,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       priceId,
+      trialEligible,
       userId: session.user.id,
       customer: {
         email: session.user.email,
