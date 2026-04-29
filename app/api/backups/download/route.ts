@@ -1,171 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@/lib/db/prisma'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
-import { supabase } from '@/lib/supabase'
+import { downloadBackup, BackupServiceError } from '@/services/backup.service'
 
-/**
- * Zod schema for backup download request
- */
 const downloadSchema = z.object({
-  licenseKey: z.string().min(1, 'License key is required'),
-  deviceId: z.string().min(1, 'Device ID is required'),
-  backupId: z.string().min(1, 'Backup ID is required'),
+  licenseKey: z.string().min(1),
+  deviceId: z.string().min(1),
+  backupId: z.string().min(1),
 })
 
-type DownloadRequest = z.infer<typeof downloadSchema>
-
-/**
- * POST /api/backups/download
- * Download a backup file
- */
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting: max 30 downloads per hour per IP
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
-    const rateLimitResult = await checkRateLimit(ip, 'backup-download', 30, 3600)
-
-    if (!rateLimitResult.allowed) {
+    const ip = request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? 'unknown'
+    const rateLimit = await checkRateLimit(ip, 'backup-download', 30, 3600)
+    if (!rateLimit.allowed) {
       return NextResponse.json(
-        {
-          success: false,
-          message: `Too many download attempts. Try again in ${Math.ceil(rateLimitResult.retryAfter / 60)} minutes.`,
-        },
+        { success: false, message: `Too many download attempts. Try again in ${Math.ceil(rateLimit.retryAfter / 60)} minutes.` },
         { status: 429 }
       )
     }
 
-    // Parse and validate request body
-    const body = await request.json()
-    const validationResult = downloadSchema.safeParse(body)
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Invalid request data',
-          errors: validationResult.error.errors,
-        },
-        { status: 400 }
-      )
+    const parsed = downloadSchema.safeParse(await request.json())
+    if (!parsed.success) {
+      return NextResponse.json({ success: false, message: 'Invalid request data', errors: parsed.error.errors }, { status: 400 })
     }
 
-    const { licenseKey, deviceId, backupId }: DownloadRequest = validationResult.data
+    const { licenseKey, deviceId, backupId } = parsed.data
+    const { buffer, fileName } = await downloadBackup(licenseKey, deviceId, backupId)
 
-    // Find user by license key
-    const user = await prisma.user.findUnique({
-      where: { licenseKey },
-      include: {
-        ActivatedDevice: {
-          where: {
-            deviceId,
-            isActive: true,
-          },
-        },
-      },
-    })
-
-    // Check if license key exists
-    if (!user) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Invalid license key',
-        },
-        { status: 401 }
-      )
-    }
-
-    // Check if device is activated
-    const device = user.ActivatedDevice[0]
-    if (!device) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Device not activated with this license',
-        },
-        { status: 403 }
-      )
-    }
-
-    // Find the backup
-    const backup = await prisma.backup.findUnique({
-      where: { id: backupId },
-    })
-
-    if (!backup) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Backup not found',
-        },
-        { status: 404 }
-      )
-    }
-
-    // Verify backup belongs to this user
-    if (backup.userId !== user.id) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Unauthorized access to backup',
-        },
-        { status: 403 }
-      )
-    }
-
-    // Extract storage path from fileUrl
-    // Assuming fileUrl format: https://[project].supabase.co/storage/v1/object/public/backups/[path]
-    const urlParts = backup.fileUrl.split('/backups/')
-    if (urlParts.length < 2) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Invalid backup file URL',
-        },
-        { status: 500 }
-      )
-    }
-
-    const storagePath = urlParts[1]
-
-    // Download file from Supabase Storage
-    const { data: fileData, error: downloadError } = await supabase.storage
-      .from('backups')
-      .download(storagePath)
-
-    if (downloadError || !fileData) {
-      console.error('Supabase download error:', downloadError)
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Failed to download backup from storage',
-        },
-        { status: 404 }
-      )
-    }
-
-    // Convert Blob to Buffer
-    const arrayBuffer = await fileData.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
-
-    // Return the file as a downloadable response
     return new NextResponse(buffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${backup.fileName}"`,
+        'Content-Disposition': `attachment; filename="${fileName}"`,
         'Content-Length': buffer.length.toString(),
       },
     })
   } catch (error) {
+    if (error instanceof BackupServiceError) {
+      return NextResponse.json({ success: false, message: error.message }, { status: error.status })
+    }
     console.error('Backup download error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error',
-      },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 })
   }
 }
