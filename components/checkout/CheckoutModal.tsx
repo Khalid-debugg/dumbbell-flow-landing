@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import type { PlanTier, BillingInterval } from "@/lib/payments/paddle";
 import { getPriceId } from "@/lib/payments/paddle";
@@ -31,10 +32,11 @@ export function CheckoutModal({
   planName,
   price,
 }: CheckoutModalProps) {
-  const t = useTranslations('checkout.modal');
+  const t = useTranslations("checkout.modal");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paddleReady, setPaddleReady] = useState(false);
+  const [trialEligible, setTrialEligible] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkPaddle = () => {
@@ -55,6 +57,15 @@ export function CheckoutModal({
       return () => clearInterval(interval);
     }
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    fetch("/api/checkout")
+      .then((r) => r.json())
+      .then((data) => setTrialEligible(data.trialEligible ?? false))
+      .catch(() => setTrialEligible(false));
+  }, [isOpen]);
 
   const handleCheckout = async () => {
     if (!paddleReady || !window.Paddle) {
@@ -82,12 +93,6 @@ export function CheckoutModal({
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("Checkout failed:", {
-          status: response.status,
-          error: data.error,
-          details: data.details,
-          fullResponse: data
-        });
         throw new Error(data.error || "Failed to create checkout session");
       }
 
@@ -96,7 +101,9 @@ export function CheckoutModal({
           displayMode: "overlay",
           theme: "light",
           locale: "en",
-          successUrl: data.successUrl || `${window.location.origin}/dashboard?checkout=success`,
+          successUrl:
+            data.successUrl ||
+            `${window.location.origin}/dashboard?checkout=success`,
         },
         items: [
           {
@@ -104,9 +111,9 @@ export function CheckoutModal({
             quantity: 1,
           },
         ],
-        customer: data.customer ? {
-          email: data.customer.email,
-        } : undefined,
+        customer: data.customer
+          ? { email: data.customer.email }
+          : undefined,
         customData: {
           userId: data.userId,
           planTier: planTier,
@@ -116,7 +123,6 @@ export function CheckoutModal({
 
       onClose();
     } catch (err) {
-      console.error("Checkout error:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
@@ -135,23 +141,42 @@ export function CheckoutModal({
           <DialogTitle>
             {planName} - {t(`title.${billingInterval}`)}
           </DialogTitle>
-          <DialogDescription>
-            {t('description')}
-          </DialogDescription>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="rounded-lg border p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">{planName} {t('plan')}</p>
+                <p className="font-medium">{planName} {t("plan")}</p>
                 <p className="text-sm text-muted-foreground">
-                  {t(`billing.${billingInterval === "perpetual" ? "oneTime" : billingInterval}`)}
+                  {t(`billing.${billingInterval}`)}
                 </p>
               </div>
               <p className="text-2xl font-bold">{price}</p>
             </div>
+
+            {trialEligible !== null && (
+              <div className="mt-3 pt-3 border-t flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Free trial</span>
+                {trialEligible ? (
+                  <Badge variant="secondary" className="text-green-700 bg-green-100 dark:bg-green-900/30 dark:text-green-400">
+                    30 days included
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="text-muted-foreground">
+                    Not available
+                  </Badge>
+                )}
+              </div>
+            )}
           </div>
+
+          {!trialEligible && trialEligible !== null && (
+            <p className="text-xs text-muted-foreground">
+              Your account has already used its free trial. Billing starts immediately upon checkout.
+            </p>
+          )}
 
           {error && (
             <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
@@ -168,7 +193,7 @@ export function CheckoutModal({
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('button.loading')}
+                {t("button.loading")}
               </>
             ) : !paddleReady ? (
               <>
@@ -176,12 +201,12 @@ export function CheckoutModal({
                 Initializing...
               </>
             ) : (
-              t('button.proceed')
+              t("button.proceed")
             )}
           </Button>
 
           <p className="text-center text-xs text-muted-foreground">
-            {t('footer')}
+            {t("footer")}
           </p>
         </div>
       </DialogContent>
@@ -189,36 +214,3 @@ export function CheckoutModal({
   );
 }
 
-declare global {
-  interface Window {
-    Paddle?: {
-      Initialize: (config: { token: string }) => void;
-      Environment: {
-        set: (env: "sandbox" | "production") => void;
-      };
-      Checkout: {
-        open: (options: {
-          settings?: {
-            displayMode?: "overlay" | "inline";
-            theme?: "light" | "dark";
-            locale?: string;
-            successUrl?: string;
-          };
-          items: Array<{
-            priceId: string;
-            quantity: number;
-          }>;
-          customer?: {
-            email?: string;
-            address?: {
-              countryCode?: string;
-              postalCode?: string;
-              region?: string;
-            };
-          };
-          customData?: Record<string, unknown>;
-        }) => void;
-      };
-    };
-  }
-}
