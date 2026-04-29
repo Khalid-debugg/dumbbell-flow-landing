@@ -43,4 +43,3 @@ export function PaddleProvider({
   );
 }
 
-export { PaddleProvider as LemonSqueezyProvider };
