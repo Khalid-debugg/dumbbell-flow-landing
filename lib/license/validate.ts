@@ -93,16 +93,11 @@ interface UserData {
   subscriptionStatus: string;
   trialEndAt: Date;
   subscriptionType: string | null;
-  perpetualLicensePurchasedAt: Date | null;
 }
 
-/**
- * Check if user's subscription is valid
- */
 function checkSubscriptionStatus(user: UserData): LicenseValidationResult {
   const now = new Date()
 
-  // Check trial expiry
   if (user.subscriptionStatus === 'trial') {
     if (now > user.trialEndAt) {
       return {
@@ -114,34 +109,26 @@ function checkSubscriptionStatus(user: UserData): LicenseValidationResult {
     return { valid: true }
   }
 
-  // Check subscription status
-  if (user.subscriptionType === 'subscription') {
-    if (user.subscriptionStatus === 'past_due') {
-      // Still valid but show warning
-      return {
-        valid: true,
-        code: 'PAYMENT_WARNING',
-        message: 'Payment failed. Please update your payment method.'
-      }
+  if (user.subscriptionStatus === 'past_due') {
+    return {
+      valid: true,
+      code: 'PAYMENT_WARNING',
+      message: 'Payment failed. Please update your payment method.'
     }
+  }
 
-    if (['cancelled', 'expired'].includes(user.subscriptionStatus)) {
-      return {
-        valid: false,
-        code: 'SUBSCRIPTION_EXPIRED',
-        message: 'Your subscription is inactive. Reactivate to continue.'
-      }
+  if (['cancelled', 'expired'].includes(user.subscriptionStatus)) {
+    return {
+      valid: false,
+      code: 'SUBSCRIPTION_EXPIRED',
+      message: 'Your subscription is inactive. Reactivate to continue.'
     }
+  }
 
+  if (user.subscriptionStatus === 'active') {
     return { valid: true }
   }
 
-  // Perpetual licenses never expire
-  if (user.subscriptionType === 'perpetual') {
-    return { valid: true }
-  }
-
-  // Unknown status
   return {
     valid: false,
     code: 'UNKNOWN_STATUS',
@@ -149,20 +136,9 @@ function checkSubscriptionStatus(user: UserData): LicenseValidationResult {
   }
 }
 
-/**
- * Calculate days remaining for trial/subscription
- */
 export function calculateDaysRemaining(endDate: Date): number {
   const now = new Date()
   const diff = endDate.getTime() - now.getTime()
   const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
   return Math.max(0, days)
-}
-
-/**
- * Check if perpetual license has update access
- */
-export function hasUpdateAccess(purchasedAt: Date | null, updatesUntil: Date | null): boolean {
-  if (!purchasedAt || !updatesUntil) return false
-  return new Date() < updatesUntil
 }
