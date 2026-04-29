@@ -30,15 +30,6 @@ model ActivatedDevice {
   @@index([deviceId])
 }
 
-model CurrencyRate {
-  id          String   @id @default(cuid())
-  currency    String   @unique @db.VarChar(3)
-  rateToUSD   Float
-  lastUpdated DateTime @default(now())
-
-  @@index([currency])
-  @@index([lastUpdated])
-}
 
 model Download {
   id           String   @id @default(cuid())
@@ -75,8 +66,6 @@ model User {
   name                         String?
   passwordHash                 String
   language                     String            @default("en") @db.VarChar(5)
-  preferredCurrency            String            @default("USD") @db.VarChar(3)
-  detectedCountry              String?           @db.VarChar(2)
   trialStartAt                 DateTime          @default(now())
   trialEndAt                   DateTime
   subscriptionStatus           String            @default("trial") @db.VarChar(20)
@@ -84,10 +73,6 @@ model User {
   planTier                     String?           @db.VarChar(20)
   deviceLimit                  Int               @default(1)
   licenseKey                   String?           @unique @db.VarChar(100)
-  lemonSqueezyCustomerId       String?           @db.VarChar(100)
-  lemonSqueezySubscriptionId   String?           @db.VarChar(100)
-  perpetualLicensePurchasedAt  DateTime?
-  perpetualLicenseUpdatesUntil DateTime?
   createdAt                    DateTime          @default(now())
   updatedAt                    DateTime          @updatedAt
   emailVerified                DateTime?
