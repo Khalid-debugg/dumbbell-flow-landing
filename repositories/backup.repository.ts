@@ -78,3 +78,11 @@ export async function deleteOldBackups(userId: string, deviceId: string, keepCou
   })
   return all.slice(keepCount)
 }
+
+export async function getLatestBackupByDevice(userId: string, deviceId: string) {
+  return prisma.backup.findFirst({
+    where: { userId, deviceId },
+    orderBy: { createdAt: 'desc' },
+    select: { createdAt: true },
+  })
+}
