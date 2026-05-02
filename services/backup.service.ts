@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { supabase, extractStoragePath } from '@/lib/storage/supabase'
+import { supabase, getSupabaseAdmin, extractStoragePath } from '@/lib/storage/supabase'
 import { findUserWithDevicesByLicenseKey } from '@/repositories/user.repository'
 import {
   createBackup,
@@ -10,6 +10,7 @@ import {
   deleteBackup,
   listDevicesWithBackups,
   deleteOldBackups,
+  getLatestBackupByDevice,
 } from '@/repositories/backup.repository'
 
 export class BackupServiceError extends Error {
@@ -33,6 +34,81 @@ async function resolveAuthorizedUser(licenseKey: string, deviceId: string) {
   if (!user.ActivatedDevice[0])
     throw new BackupServiceError('Device not activated with this license', 'DEVICE_NOT_FOUND', 403)
   return user
+}
+
+export async function getBackupUploadUrl(params: {
+  licenseKey: string
+  deviceId: string
+  deviceName?: string | null
+  fileName: string
+}) {
+  const { licenseKey, deviceId, fileName } = params
+
+  const user = await resolveAuthorizedUser(licenseKey, deviceId)
+
+  const latest = await getLatestBackupByDevice(user.id, deviceId)
+  if (latest) {
+    const hoursSince = (Date.now() - latest.createdAt.getTime()) / (1000 * 3600)
+    if (hoursSince < 24) {
+      const hoursRemaining = Math.ceil(24 - hoursSince)
+      throw new BackupServiceError(
+        `Daily backup limit reached. Next upload available in ${hoursRemaining} hour(s).`,
+        'DAILY_LIMIT_REACHED',
+        429
+      )
+    }
+  }
+
+  const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_')
+  const uniqueFileName = `${Date.now()}-${sanitizedFileName}`
+  const storagePath = `${user.id}/${deviceId}/${uniqueFileName}`
+
+  const adminClient = getSupabaseAdmin()
+  const { data, error } = await adminClient.storage.from('backups').createSignedUploadUrl(storagePath)
+
+  if (error || !data)
+    throw new BackupServiceError('Failed to create upload URL', 'STORAGE_ERROR', 500)
+
+  return { signedUrl: data.signedUrl, storagePath }
+}
+
+export async function confirmBackupUpload(params: {
+  licenseKey: string
+  deviceId: string
+  deviceName?: string | null
+  storagePath: string
+  fileName: string
+  fileSize: number
+  checksum: string
+}) {
+  const { licenseKey, deviceId, deviceName, storagePath, fileName, fileSize, checksum } = params
+
+  const user = await resolveAuthorizedUser(licenseKey, deviceId)
+  const device = user.ActivatedDevice[0]
+
+  if (!storagePath.startsWith(`${user.id}/${deviceId}/`))
+    throw new BackupServiceError('Invalid storage path', 'FORBIDDEN', 403)
+
+  const { data: urlData } = supabase.storage.from('backups').getPublicUrl(storagePath)
+
+  const backup = await createBackup({
+    userId: user.id,
+    deviceId,
+    deviceName: deviceName || device.deviceName || 'Unknown Device',
+    fileName,
+    fileSize,
+    fileUrl: urlData.publicUrl,
+    checksum,
+  })
+
+  const oldBackups = await deleteOldBackups(user.id, deviceId, MAX_BACKUPS_PER_DEVICE)
+  for (const old of oldBackups) {
+    const p = extractStoragePath(old.fileUrl)
+    if (p) await supabase.storage.from('backups').remove([p])
+    await deleteBackup(old.id)
+  }
+
+  return backup
 }
 
 export async function uploadBackup(params: {
