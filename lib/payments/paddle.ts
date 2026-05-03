@@ -1,5 +1,5 @@
 const isSandbox =
-  (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || "sandbox") === "sandbox";
+  process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === "sandbox";
 
 const env = isSandbox ? "SANDBOX" : "PRODUCTION";
 
