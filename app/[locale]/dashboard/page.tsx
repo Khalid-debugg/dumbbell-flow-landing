@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import { Header } from '@/components/landing/Header'
 import { DashboardContent } from '@/components/dashboard/DashboardContent'
 import { findUserWithActiveDevicesByEmail, updateUserSubscription } from '@/repositories/user.repository'
-import { computeTrialStatus } from '@/services/license.service'
+import { computeSubscriptionStatus } from '@/services/license.service'
 
 export default async function DashboardPage({
   params,
@@ -35,30 +35,19 @@ export default async function DashboardPage({
 
   const now = new Date()
 
-  if (user.subscriptionStatus === 'trial' && now > user.trialEndAt) {
+  const { isAccessActive, isAccessExpired, daysRemaining } = computeSubscriptionStatus(user.subscriptionEndsAt)
+
+  if (user.subscriptionStatus === 'trial' && isAccessExpired) {
     await updateUserSubscription(user.id, { subscriptionStatus: 'expired' })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     redirect(`/${params.locale}/#pricing` as any)
   }
 
-  const trialDaysRemaining =
-    user.subscriptionStatus === 'trial'
-      ? Math.max(0, Math.ceil((user.trialEndAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
-      : 0
-
-  const devices = user.ActivatedDevice.map((device) => {
-    const { isTrialActive, isTrialExpired, trialDaysRemaining: deviceTrialDays } = computeTrialStatus(device.trialEndsAt)
-    return {
-      ...device,
-      activatedAt: device.activatedAt.toISOString(),
-      lastValidatedAt: device.lastValidatedAt.toISOString(),
-      trialStartedAt: device.trialStartedAt?.toISOString() ?? null,
-      trialEndsAt: device.trialEndsAt?.toISOString() ?? null,
-      isTrialActive,
-      isTrialExpired,
-      trialDaysRemaining: deviceTrialDays,
-    }
-  })
+  const devices = user.ActivatedDevice.map((device) => ({
+    ...device,
+    activatedAt: device.activatedAt.toISOString(),
+    lastValidatedAt: device.lastValidatedAt.toISOString(),
+  }))
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/20">
@@ -70,9 +59,12 @@ export default async function DashboardPage({
           emailVerified: user.emailVerified,
           licenseKey: user.licenseKey,
           subscriptionStatus: user.subscriptionStatus,
+          subscriptionEndsAt: user.subscriptionEndsAt.toISOString(),
           planTier: user.planTier,
           deviceLimit: user.deviceLimit,
-          trialDaysRemaining,
+          daysRemaining,
+          isAccessActive,
+          isAccessExpired,
         }}
         devices={devices}
       />

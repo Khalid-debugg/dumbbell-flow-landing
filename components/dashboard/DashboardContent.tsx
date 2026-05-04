@@ -29,12 +29,6 @@ interface Device {
   activatedAt: string
   lastValidatedAt: string
   isActive: boolean
-  trialStartedAt: string | null
-  trialEndsAt: string | null
-  trialUsed: boolean
-  isTrialActive: boolean
-  isTrialExpired: boolean
-  trialDaysRemaining: number
 }
 
 interface User {
@@ -43,9 +37,12 @@ interface User {
   emailVerified: Date | null
   licenseKey: string
   subscriptionStatus: string
+  subscriptionEndsAt: string
   planTier: string | null
   deviceLimit: number
-  trialDaysRemaining: number
+  daysRemaining: number
+  isAccessActive: boolean
+  isAccessExpired: boolean
 }
 
 interface DashboardContentProps {
@@ -99,7 +96,7 @@ export function DashboardContent({ user, devices }: DashboardContentProps) {
                       {t('trial.title')}
                     </h3>
                     <p className="text-muted-foreground">
-                      {t('trial.daysRemaining', { days: user.trialDaysRemaining })}
+                      {t('trial.daysRemaining', { days: user.daysRemaining })}
                     </p>
                   </div>
                 </div>
@@ -261,13 +258,13 @@ export function DashboardContent({ user, devices }: DashboardContentProps) {
                           <h3 className="font-semibold text-lg">
                             {device.deviceName || t('activatedDevices.deviceFallback', { platform: device.platform })}
                           </h3>
-                          {device.isTrialActive && (
+                          {user.isAccessActive && user.daysRemaining <= 7 && (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium border border-blue-500/20">
                               <Zap className="h-3 w-3" />
-                              {t('activatedDevices.trialActive', { days: device.trialDaysRemaining })}
+                              {t('activatedDevices.trialActive', { days: user.daysRemaining })}
                             </span>
                           )}
-                          {device.isTrialExpired && (
+                          {user.isAccessExpired && (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-destructive/10 text-destructive text-xs font-medium border border-destructive/20">
                               <Clock className="h-3 w-3" />
                               {t('activatedDevices.trialExpired')}
@@ -290,11 +287,11 @@ export function DashboardContent({ user, devices }: DashboardContentProps) {
                           </div>
                         </div>
 
-                        {device.trialEndsAt && (
+                        {user.subscriptionEndsAt && (
                           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
                             <Clock className="h-4 w-4" />
                             <span>
-                              {t('activatedDevices.trialEndsLabel')}: {formatDate(device.trialEndsAt)}
+                              {t('activatedDevices.trialEndsLabel')}: {formatDate(user.subscriptionEndsAt)}
                             </span>
                           </div>
                         )}

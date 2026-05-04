@@ -26,7 +26,7 @@ export default async function BillingPage({
       subscriptionType: true,
       planTier: true,
       deviceLimit: true,
-      trialEndAt: true,
+      subscriptionEndsAt: true,
     },
   });
 
@@ -119,7 +119,7 @@ export default async function BillingPage({
                 <div>
                   <p className="text-sm text-muted-foreground">Trial Ends</p>
                   <p className="text-lg font-semibold">
-                    {formatDate(user.trialEndAt)}
+                    {formatDate(user.subscriptionEndsAt)}
                   </p>
                 </div>
               )}
@@ -131,7 +131,7 @@ export default async function BillingPage({
                 <div className="flex-1">
                   <p className="font-medium">Trial Period Active</p>
                   <p className="text-sm text-muted-foreground">
-                    Your trial expires on {formatDate(user.trialEndAt)}.
+                    Your trial expires on {formatDate(user.subscriptionEndsAt)}.
                     Upgrade now to continue using Dumbbellflow after your trial
                     ends.
                   </p>

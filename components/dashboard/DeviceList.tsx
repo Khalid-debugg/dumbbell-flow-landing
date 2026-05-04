@@ -34,12 +34,6 @@ interface Device {
   activatedAt: string
   lastValidatedAt: string
   isActive: boolean
-  trialStartedAt: string | null
-  trialEndsAt: string | null
-  trialUsed: boolean
-  isTrialActive: boolean
-  isTrialExpired: boolean
-  trialDaysRemaining: number
 }
 
 interface DeviceListProps {
@@ -112,16 +106,6 @@ export function DeviceList({ devices, deviceLimit, devicesUsed }: DeviceListProp
                         <h4 className="font-medium">
                           {device.deviceName || `${device.platform} Device`}
                         </h4>
-                        {device.isTrialActive && (
-                          <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">
-                            Trial: {device.trialDaysRemaining}d left
-                          </span>
-                        )}
-                        {device.isTrialExpired && (
-                          <span className="text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 px-2 py-0.5 rounded">
-                            Trial Expired
-                          </span>
-                        )}
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">
                         {t('platform')}: {device.platform.charAt(0).toUpperCase() + device.platform.slice(1)} • {t('version')}: {device.appVersion}
@@ -129,11 +113,6 @@ export function DeviceList({ devices, deviceLimit, devicesUsed }: DeviceListProp
                       <p className="text-xs text-muted-foreground mt-1">
                         {t('activated')}: {formatDate(device.activatedAt)}
                       </p>
-                      {device.trialEndsAt && (
-                        <p className="text-xs text-muted-foreground">
-                          {t('trialEnds')}: {formatDate(device.trialEndsAt)}
-                        </p>
-                      )}
                     </div>
                   </div>
                   <Button
