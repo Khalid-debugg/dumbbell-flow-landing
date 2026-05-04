@@ -30,14 +30,11 @@ export async function createDevice(data: {
   deviceName?: string | null
   platform: string
   appVersion: string
-  trialEndsAt: Date | null
 }) {
   return prisma.activatedDevice.create({
     data: {
       id: crypto.randomUUID(),
       isActive: true,
-      trialStartedAt: new Date(),
-      trialUsed: true,
       ...data,
     },
   })

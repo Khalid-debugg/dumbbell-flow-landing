@@ -12,7 +12,7 @@ export interface LicenseValidationResult {
     subscriptionStatus: string
     subscriptionType: string | null
     deviceLimit: number
-    trialEndAt: Date
+    subscriptionEndsAt: Date
   }
 }
 
@@ -84,14 +84,14 @@ export async function validateLicenseKey(
       subscriptionStatus: user.subscriptionStatus,
       subscriptionType: user.subscriptionType,
       deviceLimit: user.deviceLimit,
-      trialEndAt: user.trialEndAt
+      subscriptionEndsAt: user.subscriptionEndsAt
     }
   }
 }
 
 interface UserData {
   subscriptionStatus: string;
-  trialEndAt: Date;
+  subscriptionEndsAt: Date;
   subscriptionType: string | null;
 }
 
@@ -99,7 +99,7 @@ function checkSubscriptionStatus(user: UserData): LicenseValidationResult {
   const now = new Date()
 
   if (user.subscriptionStatus === 'trial') {
-    if (now > user.trialEndAt) {
+    if (now > user.subscriptionEndsAt) {
       return {
         valid: false,
         code: 'TRIAL_EXPIRED',

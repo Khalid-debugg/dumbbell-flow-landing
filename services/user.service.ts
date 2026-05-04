@@ -45,9 +45,9 @@ export async function registerUser(email: string, password: string, name?: strin
   ])
   const verificationToken = generateToken(32)
   const verificationTokenExpiry = generateTokenExpiry(24)
-  const trialStartAt = new Date()
-  const trialEndAt = new Date()
-  trialEndAt.setDate(trialEndAt.getDate() + 30)
+  const subscriptionStartsAt = new Date()
+  const subscriptionEndsAt = new Date()
+  subscriptionEndsAt.setMonth(subscriptionEndsAt.getMonth() + 1)
 
   const user = await createUser({
     email: email.toLowerCase(),
@@ -56,8 +56,8 @@ export async function registerUser(email: string, password: string, name?: strin
     verificationToken,
     verificationTokenExpiry,
     licenseKey,
-    trialStartAt,
-    trialEndAt,
+    subscriptionStartsAt,
+    subscriptionEndsAt,
     subscriptionStatus: 'trial',
     deviceLimit: 1,
   })

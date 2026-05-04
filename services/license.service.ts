@@ -32,15 +32,15 @@ function normalizePlatform(platform: string): string {
   return PLATFORM_MAP[platform] ?? platform
 }
 
-function computeTrialStatus(trialEndsAt: Date | null) {
+function computeSubscriptionStatus(subscriptionEndsAt: Date | null) {
   const now = new Date()
-  const isTrialActive = trialEndsAt ? now < trialEndsAt : false
-  const isTrialExpired = trialEndsAt ? now >= trialEndsAt : false
-  const trialDaysRemaining =
-    trialEndsAt && isTrialActive
-      ? Math.ceil((trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  const isAccessActive = subscriptionEndsAt ? now < subscriptionEndsAt : false
+  const isAccessExpired = subscriptionEndsAt ? now >= subscriptionEndsAt : false
+  const daysRemaining =
+    subscriptionEndsAt && isAccessActive
+      ? Math.ceil((subscriptionEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
       : 0
-  return { isTrialActive, isTrialExpired, trialDaysRemaining }
+  return { isAccessActive, isAccessExpired, daysRemaining }
 }
 
 export async function activateLicense(params: {
@@ -71,7 +71,7 @@ export async function activateLicense(params: {
       403
     )
 
-  if (user.subscriptionStatus === 'trial' && new Date() > user.trialEndAt)
+  if (user.subscriptionStatus === 'trial' && new Date() > user.subscriptionEndsAt)
     throw new LicenseServiceError(
       'Your trial has expired. Please upgrade to continue.',
       'TRIAL_EXPIRED',
@@ -91,7 +91,7 @@ export async function activateLicense(params: {
     const signedLicense = signLicenseData({
       licenseKey: user.licenseKey!,
       deviceId: device.deviceId,
-      trialEndsAt: device.trialEndsAt,
+      subscriptionEndsAt: user.subscriptionEndsAt,
       subscriptionStatus: user.subscriptionStatus,
     })
 
@@ -100,6 +100,7 @@ export async function activateLicense(params: {
       activeCount: existing.isActive ? activeCount : activeCount + 1,
       deviceLimit: user.deviceLimit,
       subscriptionStatus: user.subscriptionStatus,
+      subscriptionEndsAt: user.subscriptionEndsAt,
       signedLicense,
       reactivated: !existing.isActive,
     }
@@ -113,13 +114,12 @@ export async function activateLicense(params: {
       { activeCount, deviceLimit: user.deviceLimit }
     )
 
-  const trialEndsAt = user.subscriptionStatus === 'trial' ? user.trialEndAt : null
-  const device = await createDevice({ userId: user.id, deviceId, deviceName, platform, appVersion, trialEndsAt })
+  const device = await createDevice({ userId: user.id, deviceId, deviceName, platform, appVersion })
 
   const signedLicense = signLicenseData({
     licenseKey: user.licenseKey!,
     deviceId: device.deviceId,
-    trialEndsAt: device.trialEndsAt,
+    subscriptionEndsAt: user.subscriptionEndsAt,
     subscriptionStatus: user.subscriptionStatus,
   })
 
@@ -128,6 +128,7 @@ export async function activateLicense(params: {
     activeCount: activeCount + 1,
     deviceLimit: user.deviceLimit,
     subscriptionStatus: user.subscriptionStatus,
+    subscriptionEndsAt: user.subscriptionEndsAt,
     signedLicense,
     reactivated: false,
   }
@@ -144,11 +145,11 @@ export async function validateLicense(licenseKey: string, deviceId: string) {
 
   await touchDevice(device.id)
 
-  const { isTrialActive, isTrialExpired, trialDaysRemaining } = computeTrialStatus(device.trialEndsAt)
+  const { isAccessActive, isAccessExpired, daysRemaining } = computeSubscriptionStatus(user.subscriptionEndsAt)
   const hasActiveSubscription = ['active', 'paid'].includes(user.subscriptionStatus)
-  const isValid = isTrialActive || hasActiveSubscription
+  const isValid = isAccessActive || hasActiveSubscription
 
-  if (user.subscriptionStatus === 'trial' && isTrialExpired && !hasActiveSubscription) {
+  if (user.subscriptionStatus === 'trial' && isAccessExpired && !hasActiveSubscription) {
     await updateUserSubscription(user.id, { subscriptionStatus: 'expired' })
   }
 
@@ -156,9 +157,10 @@ export async function validateLicense(licenseKey: string, deviceId: string) {
     isValid,
     device,
     subscriptionStatus: user.subscriptionStatus,
-    isTrialActive,
-    isTrialExpired,
-    trialDaysRemaining,
+    subscriptionEndsAt: user.subscriptionEndsAt,
+    isAccessActive,
+    isAccessExpired,
+    daysRemaining,
     hasActiveSubscription,
   }
 }
@@ -194,26 +196,17 @@ export async function getUserDevices(email: string) {
   const user = await findUserWithAllDevicesByEmail(email)
   if (!user) return null
 
-  const now = new Date()
-  const devices = user.ActivatedDevice.map((device) => {
-    const { isTrialActive, isTrialExpired, trialDaysRemaining } = computeTrialStatus(device.trialEndsAt)
-    return {
-      id: device.id,
-      deviceId: device.deviceId,
-      deviceName: device.deviceName,
-      platform: device.platform,
-      appVersion: device.appVersion,
-      activatedAt: device.activatedAt.toISOString(),
-      lastValidatedAt: device.lastValidatedAt.toISOString(),
-      isActive: device.isActive,
-      trialStartedAt: device.trialStartedAt?.toISOString() ?? null,
-      trialEndsAt: device.trialEndsAt?.toISOString() ?? null,
-      trialUsed: device.trialUsed,
-      isTrialActive,
-      isTrialExpired,
-      trialDaysRemaining,
-    }
-  })
+  const { isAccessActive, isAccessExpired, daysRemaining } = computeSubscriptionStatus(user.subscriptionEndsAt)
+  const devices = user.ActivatedDevice.map((device) => ({
+    id: device.id,
+    deviceId: device.deviceId,
+    deviceName: device.deviceName,
+    platform: device.platform,
+    appVersion: device.appVersion,
+    activatedAt: device.activatedAt.toISOString(),
+    lastValidatedAt: device.lastValidatedAt.toISOString(),
+    isActive: device.isActive,
+  }))
 
   const hasActiveSubscription = ['active', 'paid'].includes(user.subscriptionStatus)
 
@@ -223,10 +216,15 @@ export async function getUserDevices(email: string) {
     deviceLimit: user.deviceLimit,
     devicesUsed: devices.filter((d) => d.isActive).length,
     subscriptionStatus: user.subscriptionStatus,
+    subscriptionStartsAt: user.subscriptionStartsAt.toISOString(),
+    subscriptionEndsAt: user.subscriptionEndsAt.toISOString(),
+    isAccessActive,
+    isAccessExpired,
+    daysRemaining,
     hasActiveSubscription,
     planTier: user.planTier,
     subscriptionType: user.subscriptionType,
   }
 }
 
-export { computeTrialStatus }
+export { computeSubscriptionStatus }

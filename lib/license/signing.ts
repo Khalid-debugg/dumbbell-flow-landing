@@ -7,7 +7,7 @@ import crypto from 'crypto';
 export function signLicenseData(data: {
   licenseKey: string;
   deviceId: string;
-  trialEndsAt: Date | null;
+  subscriptionEndsAt: Date | null;
   subscriptionStatus: string;
 }): string {
   const secret = process.env.LICENSE_SIGNING_SECRET;
@@ -19,7 +19,7 @@ export function signLicenseData(data: {
   const payload = JSON.stringify({
     key: data.licenseKey,
     device: data.deviceId,
-    trialEnd: data.trialEndsAt?.toISOString() || null,
+    subEnd: data.subscriptionEndsAt?.toISOString() || null,
     status: data.subscriptionStatus,
     timestamp: Date.now(),
   });
@@ -47,7 +47,7 @@ export function verifyLicenseSignature(signedData: string): {
   data?: {
     licenseKey: string;
     deviceId: string;
-    trialEndsAt: Date | null;
+    subscriptionEndsAt: Date | null;
     subscriptionStatus: string;
     timestamp: number;
   };
@@ -59,11 +59,9 @@ export function verifyLicenseSignature(signedData: string): {
       throw new Error('LICENSE_SIGNING_SECRET environment variable is not set');
     }
 
-    // Decode base64
     const decoded = JSON.parse(Buffer.from(signedData, 'base64').toString('utf-8'));
     const { payload, signature } = decoded;
 
-    // Verify signature
     const hmac = crypto.createHmac('sha256', secret);
     hmac.update(payload);
     const expectedSignature = hmac.digest('hex');
@@ -74,7 +72,6 @@ export function verifyLicenseSignature(signedData: string): {
       return { valid: false };
     }
 
-    // Parse payload
     const parsedPayload = JSON.parse(payload);
 
     return {
@@ -82,7 +79,7 @@ export function verifyLicenseSignature(signedData: string): {
       data: {
         licenseKey: parsedPayload.key,
         deviceId: parsedPayload.device,
-        trialEndsAt: parsedPayload.trialEnd ? new Date(parsedPayload.trialEnd) : null,
+        subscriptionEndsAt: parsedPayload.subEnd ? new Date(parsedPayload.subEnd) : null,
         subscriptionStatus: parsedPayload.status,
         timestamp: parsedPayload.timestamp,
       },

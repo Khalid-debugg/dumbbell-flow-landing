@@ -32,8 +32,8 @@ export async function findUserWithActiveDevicesByEmail(email: string) {
       subscriptionStatus: true,
       subscriptionType: true,
       planTier: true,
-      trialStartAt: true,
-      trialEndAt: true,
+      subscriptionStartsAt: true,
+      subscriptionEndsAt: true,
       deviceLimit: true,
       ActivatedDevice: {
         where: { isActive: true },
@@ -70,8 +70,8 @@ export async function createUser(data: {
   verificationToken: string
   verificationTokenExpiry: Date
   licenseKey: string
-  trialStartAt: Date
-  trialEndAt: Date
+  subscriptionStartsAt: Date
+  subscriptionEndsAt: Date
   subscriptionStatus: string
   deviceLimit: number
 }) {
@@ -82,8 +82,8 @@ export async function createUser(data: {
       email: true,
       name: true,
       licenseKey: true,
-      trialStartAt: true,
-      trialEndAt: true,
+      subscriptionStartsAt: true,
+      subscriptionEndsAt: true,
     },
   })
 }
