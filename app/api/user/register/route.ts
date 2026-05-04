@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         message: 'Account created successfully. Please check your email to verify your account.',
-        user: { id: user.id, email: user.email, name: user.name, trialEndsAt: user.trialEndAt },
+        user: { id: user.id, email: user.email, name: user.name, subscriptionEndsAt: user.subscriptionEndsAt },
       },
       { status: 201 }
     )

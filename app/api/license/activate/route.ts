@@ -28,21 +28,19 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await activateLicense(parsed.data)
-    const { device, activeCount, deviceLimit, subscriptionStatus, signedLicense, reactivated } = result
+    const { device, activeCount, deviceLimit, subscriptionStatus, subscriptionEndsAt, signedLicense, reactivated } = result
 
     return NextResponse.json({
       success: true,
-      message: reactivated ? 'Device reactivated successfully' : device ? 'Device already activated' : 'Device activated successfully! 30-day trial started.',
+      message: reactivated ? 'Device reactivated successfully' : 'Device activated successfully',
       data: {
         deviceId: device.deviceId,
         deviceName: device.deviceName,
         activatedAt: device.activatedAt.toISOString(),
         devicesUsed: activeCount,
         deviceLimit,
-        trialEndsAt: device.trialEndsAt?.toISOString() ?? null,
-        trialUsed: device.trialUsed,
         subscriptionStatus,
-        isTrialActive: device.trialEndsAt ? new Date() < device.trialEndsAt : false,
+        subscriptionEndsAt: subscriptionEndsAt.toISOString(),
         signedLicense,
       },
     })
