@@ -18,9 +18,6 @@ model ActivatedDevice {
   activatedAt     DateTime @default(now())
   lastValidatedAt DateTime @default(now())
   isActive        Boolean  @default(true)
-  trialStartedAt  DateTime?
-  trialEndsAt     DateTime?
-  trialUsed       Boolean  @default(false)
   User            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, deviceId])
@@ -66,8 +63,8 @@ model User {
   name                         String?
   passwordHash                 String
   language                     String            @default("en") @db.VarChar(5)
-  trialStartAt                 DateTime          @default(now())
-  trialEndAt                   DateTime
+  subscriptionStartsAt         DateTime          @default(now())
+  subscriptionEndsAt           DateTime
   subscriptionStatus           String            @default("trial") @db.VarChar(20)
   subscriptionType             String?           @db.VarChar(20)
   planTier                     String?           @db.VarChar(20)
