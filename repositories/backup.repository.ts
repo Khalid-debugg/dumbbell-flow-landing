@@ -9,7 +9,7 @@ export async function createBackup(data: {
   fileUrl: string
   checksum: string
 }) {
-  return prisma.backup.create({ data })
+  return prisma.backup.create({ data: { ...data, fileSize: BigInt(data.fileSize) } })
 }
 
 export async function listAllBackups(userId: string) {

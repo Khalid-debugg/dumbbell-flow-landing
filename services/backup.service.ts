@@ -222,7 +222,7 @@ export async function listWebBackups(
       deviceId: b.deviceId,
       deviceName: b.deviceName || 'Unknown Device',
       fileName: b.fileName,
-      fileSize: b.fileSize,
+      fileSize: Number(b.fileSize),
       checksum: b.checksum,
       createdAt: b.createdAt.toISOString(),
       isCurrentDevice: false,

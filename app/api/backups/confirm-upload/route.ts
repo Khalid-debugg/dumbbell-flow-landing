@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       data: {
         id: backup.id,
         fileName: backup.fileName,
-        fileSize: backup.fileSize,
+        fileSize: Number(backup.fileSize),
         checksum: backup.checksum,
         createdAt: backup.createdAt.toISOString(),
       },

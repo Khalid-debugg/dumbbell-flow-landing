@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Backup uploaded successfully',
-      data: { id: backup.id, fileName: backup.fileName, fileSize: backup.fileSize, checksum: backup.checksum, createdAt: backup.createdAt.toISOString() },
+      data: { id: backup.id, fileName: backup.fileName, fileSize: Number(backup.fileSize), checksum: backup.checksum, createdAt: backup.createdAt.toISOString() },
     })
   } catch (error) {
     if (error instanceof BackupServiceError) {

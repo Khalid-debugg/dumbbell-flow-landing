@@ -65,7 +65,7 @@ model Backup {
   deviceId   String   @db.VarChar(255)
   deviceName String?  @db.VarChar(100)
   fileName   String   @db.VarChar(255)
-  fileSize   Int
+  fileSize   BigInt
   fileUrl    String   @db.Text
   checksum   String   @db.VarChar(64)
   createdAt  DateTime @default(now())
