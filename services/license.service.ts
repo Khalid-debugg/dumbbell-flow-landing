@@ -13,6 +13,7 @@ import {
 } from '@/repositories/device.repository'
 import { signLicenseData } from '@/lib/license/signing'
 import { auth } from '@/lib/auth/auth'
+import { Platform } from '@prisma/client'
 
 export class LicenseServiceError extends Error {
   constructor(
@@ -26,10 +27,10 @@ export class LicenseServiceError extends Error {
   }
 }
 
-const PLATFORM_MAP: Record<string, string> = { win32: 'windows', darwin: 'mac' }
+const PLATFORM_MAP: Record<string, Platform> = { win32: Platform.windows, darwin: Platform.mac }
 
-function normalizePlatform(platform: string): string {
-  return PLATFORM_MAP[platform] ?? platform
+function normalizePlatform(platform: string): Platform {
+  return PLATFORM_MAP[platform] ?? (platform as Platform)
 }
 
 function computeSubscriptionStatus(subscriptionEndsAt: Date | null) {

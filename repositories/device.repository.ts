@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma'
+import { Platform } from '@prisma/client'
 import crypto from 'crypto'
 
 export async function findActiveDevice(userId: string, deviceId: string) {
@@ -16,7 +17,7 @@ export async function touchDevice(id: string) {
 
 export async function reactivateDevice(
   id: string,
-  data: { deviceName?: string | null; platform: string; appVersion: string }
+  data: { deviceName?: string | null; platform: Platform; appVersion: string }
 ) {
   return prisma.activatedDevice.update({
     where: { id },
@@ -28,7 +29,7 @@ export async function createDevice(data: {
   userId: string
   deviceId: string
   deviceName?: string | null
-  platform: string
+  platform: Platform
   appVersion: string
 }) {
   return prisma.activatedDevice.create({

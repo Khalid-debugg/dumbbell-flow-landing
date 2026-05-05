@@ -8,12 +8,32 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum SubscriptionStatus {
+  trial
+  active
+  expired
+  cancelled
+  past_due
+}
+
+enum PlanTier {
+  basic
+  pro
+  premium
+}
+
+enum Platform {
+  windows
+  mac
+  linux
+}
+
 model ActivatedDevice {
   id              String   @id @default(cuid())
   userId          String
   deviceId        String   @db.VarChar(255)
   deviceName      String?  @db.VarChar(100)
-  platform        String   @db.VarChar(20)
+  platform        Platform
   appVersion      String   @db.VarChar(20)
   activatedAt     DateTime @default(now())
   lastValidatedAt DateTime @default(now())
@@ -32,7 +52,7 @@ model Download {
   id           String   @id @default(cuid())
   userId       String
   version      String   @db.VarChar(20)
-  platform     String   @db.VarChar(20)
+  platform     Platform
   downloadedAt DateTime @default(now())
   User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -65,8 +85,8 @@ model User {
   language                     String            @default("en") @db.VarChar(5)
   subscriptionStartsAt         DateTime          @default(now())
   subscriptionEndsAt           DateTime
-  subscriptionStatus           String            @default("trial") @db.VarChar(20)
-  planTier                     String?           @db.VarChar(20)
+  subscriptionStatus           SubscriptionStatus @default(trial)
+  planTier                     PlanTier?
   deviceLimit                  Int               @default(1)
   licenseKey                   String?           @unique @db.VarChar(100)
   createdAt                    DateTime          @default(now())

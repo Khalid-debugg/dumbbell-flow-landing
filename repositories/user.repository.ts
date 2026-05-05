@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma'
+import { PlanTier, SubscriptionStatus } from '@prisma/client'
 
 export async function findUserByEmail(email: string) {
   return prisma.user.findUnique({ where: { email } })
@@ -71,7 +72,7 @@ export async function createUser(data: {
   licenseKey: string
   subscriptionStartsAt: Date
   subscriptionEndsAt: Date
-  subscriptionStatus: string
+  subscriptionStatus: SubscriptionStatus
   deviceLimit: number
 }) {
   return prisma.user.create({
@@ -119,8 +120,8 @@ export async function updateUserVerificationToken(id: string, token: string, exp
 export async function updateUserSubscription(
   id: string,
   data: {
-    subscriptionStatus?: string
-    planTier?: string
+    subscriptionStatus?: SubscriptionStatus
+    planTier?: PlanTier
     deviceLimit?: number
   }
 ) {
