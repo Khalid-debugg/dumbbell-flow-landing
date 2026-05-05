@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await activateLicense(parsed.data)
-    const { device, activeCount, deviceLimit, subscriptionStatus, subscriptionEndsAt, signedLicense, reactivated } = result
+    const { device, activeCount, deviceLimit, subscriptionStatus, subscriptionEndsAt, planTier, signedLicense, reactivated } = result
 
     return NextResponse.json({
       success: true,
@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
         deviceLimit,
         subscriptionStatus,
         subscriptionEndsAt: subscriptionEndsAt.toISOString(),
+        planTier,
         signedLicense,
       },
     })

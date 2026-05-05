@@ -9,6 +9,7 @@ export function signLicenseData(data: {
   deviceId: string;
   subscriptionEndsAt: Date | null;
   subscriptionStatus: string;
+  planTier: string;
 }): string {
   const secret = process.env.LICENSE_SIGNING_SECRET;
 
@@ -21,6 +22,7 @@ export function signLicenseData(data: {
     device: data.deviceId,
     subEnd: data.subscriptionEndsAt?.toISOString() || null,
     status: data.subscriptionStatus,
+    tier: data.planTier,
     timestamp: Date.now(),
   });
 
@@ -49,6 +51,7 @@ export function verifyLicenseSignature(signedData: string): {
     deviceId: string;
     subscriptionEndsAt: Date | null;
     subscriptionStatus: string;
+    planTier: string;
     timestamp: number;
   };
 } {
@@ -81,6 +84,7 @@ export function verifyLicenseSignature(signedData: string): {
         deviceId: parsedPayload.device,
         subscriptionEndsAt: parsedPayload.subEnd ? new Date(parsedPayload.subEnd) : null,
         subscriptionStatus: parsedPayload.status,
+        planTier: parsedPayload.tier,
         timestamp: parsedPayload.timestamp,
       },
     };

@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
         lastValidatedAt: result.device.lastValidatedAt.toISOString(),
         subscriptionStatus: result.subscriptionStatus,
         subscriptionEndsAt: result.subscriptionEndsAt.toISOString(),
+        planTier: result.planTier,
         isAccessActive: result.isAccessActive,
         isAccessExpired: result.isAccessExpired,
         daysRemaining: result.daysRemaining,

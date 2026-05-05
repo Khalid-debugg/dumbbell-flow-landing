@@ -94,6 +94,7 @@ export async function activateLicense(params: {
       deviceId: device.deviceId,
       subscriptionEndsAt: user.subscriptionEndsAt,
       subscriptionStatus: user.subscriptionStatus,
+      planTier: user.planTier,
     })
 
     return {
@@ -102,6 +103,7 @@ export async function activateLicense(params: {
       deviceLimit: user.deviceLimit,
       subscriptionStatus: user.subscriptionStatus,
       subscriptionEndsAt: user.subscriptionEndsAt,
+      planTier: user.planTier,
       signedLicense,
       reactivated: !existing.isActive,
     }
@@ -122,6 +124,7 @@ export async function activateLicense(params: {
     deviceId: device.deviceId,
     subscriptionEndsAt: user.subscriptionEndsAt,
     subscriptionStatus: user.subscriptionStatus,
+    planTier: user.planTier,
   })
 
   return {
@@ -130,6 +133,7 @@ export async function activateLicense(params: {
     deviceLimit: user.deviceLimit,
     subscriptionStatus: user.subscriptionStatus,
     subscriptionEndsAt: user.subscriptionEndsAt,
+    planTier: user.planTier,
     signedLicense,
     reactivated: false,
   }
@@ -159,6 +163,7 @@ export async function validateLicense(licenseKey: string, deviceId: string) {
     device,
     subscriptionStatus: user.subscriptionStatus,
     subscriptionEndsAt: user.subscriptionEndsAt,
+    planTier: user.planTier,
     isAccessActive,
     isAccessExpired,
     daysRemaining,
