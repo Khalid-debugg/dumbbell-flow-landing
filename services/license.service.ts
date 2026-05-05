@@ -79,8 +79,8 @@ export async function activateLicense(params: {
       403
     )
 
-  const existing = user.ActivatedDevice.find((d) => d.deviceId === deviceId)
-  const activeCount = user.ActivatedDevice.filter((d) => d.isActive).length
+  const existing = user.activatedDevices.find((d) => d.deviceId === deviceId)
+  const activeCount = user.activatedDevices.filter((d) => d.isActive).length
 
   if (existing) {
     const device = existing.isActive
@@ -140,7 +140,7 @@ export async function validateLicense(licenseKey: string, deviceId: string) {
   if (!user)
     throw new LicenseServiceError('Invalid license key', 'INVALID_KEY', 401)
 
-  const device = user.ActivatedDevice[0]
+  const device = user.activatedDevices[0]
   if (!device)
     throw new LicenseServiceError('Device not activated with this license', 'DEVICE_NOT_FOUND', 403)
 
@@ -198,7 +198,7 @@ export async function getUserDevices(email: string) {
   if (!user) return null
 
   const { isAccessActive, isAccessExpired, daysRemaining } = computeSubscriptionStatus(user.subscriptionEndsAt)
-  const devices = user.ActivatedDevice.map((device) => ({
+  const devices = user.activatedDevices.map((device) => ({
     id: device.id,
     deviceId: device.deviceId,
     deviceName: device.deviceName,

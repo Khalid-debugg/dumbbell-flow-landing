@@ -43,7 +43,7 @@ export default async function DashboardPage({
     redirect(`/${params.locale}/#pricing` as any)
   }
 
-  const devices = user.ActivatedDevice.map((device) => ({
+  const devices = user.activatedDevices.map((device) => ({
     ...device,
     activatedAt: device.activatedAt.toISOString(),
     lastValidatedAt: device.lastValidatedAt.toISOString(),

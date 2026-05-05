@@ -31,7 +31,7 @@ async function resolveAuthorizedUser(licenseKey: string, deviceId: string) {
   const user = await findUserWithDevicesByLicenseKey(licenseKey, deviceId)
   if (!user)
     throw new BackupServiceError('Invalid license key', 'INVALID_KEY', 401)
-  if (!user.ActivatedDevice[0])
+  if (!user.activatedDevices[0])
     throw new BackupServiceError('Device not activated with this license', 'DEVICE_NOT_FOUND', 403)
   return user
 }
@@ -84,7 +84,7 @@ export async function confirmBackupUpload(params: {
   const { licenseKey, deviceId, deviceName, storagePath, fileName, fileSize, checksum } = params
 
   const user = await resolveAuthorizedUser(licenseKey, deviceId)
-  const device = user.ActivatedDevice[0]
+  const device = user.activatedDevices[0]
 
   if (!storagePath.startsWith(`${user.id}/${deviceId}/`))
     throw new BackupServiceError('Invalid storage path', 'FORBIDDEN', 403)
@@ -124,7 +124,7 @@ export async function uploadBackup(params: {
     throw new BackupServiceError('File size exceeds 50MB limit', 'FILE_TOO_LARGE', 413)
 
   const user = await resolveAuthorizedUser(licenseKey, deviceId)
-  const device = user.ActivatedDevice[0]
+  const device = user.activatedDevices[0]
 
   const arrayBuffer = await file.arrayBuffer()
   const buffer = Buffer.from(arrayBuffer)

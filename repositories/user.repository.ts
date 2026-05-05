@@ -35,7 +35,7 @@ export async function findUserWithActiveDevicesByEmail(email: string) {
       subscriptionStartsAt: true,
       subscriptionEndsAt: true,
       deviceLimit: true,
-      ActivatedDevice: {
+      activatedDevices: {
         where: { isActive: true },
         orderBy: { activatedAt: 'desc' },
       },
@@ -47,7 +47,7 @@ export async function findUserWithAllDevicesByEmail(email: string) {
   return prisma.user.findUnique({
     where: { email },
     include: {
-      ActivatedDevice: { orderBy: { activatedAt: 'desc' } },
+      activatedDevices: { orderBy: { activatedAt: 'desc' } },
     },
   })
 }
@@ -56,7 +56,7 @@ export async function findUserWithDevicesByLicenseKey(licenseKey: string, filter
   return prisma.user.findUnique({
     where: { licenseKey },
     include: {
-      ActivatedDevice: filterDeviceId
+      activatedDevices: filterDeviceId
         ? { where: { deviceId: filterDeviceId, isActive: true } }
         : { orderBy: { lastValidatedAt: 'asc' } },
     },
