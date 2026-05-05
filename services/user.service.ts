@@ -47,7 +47,7 @@ export async function registerUser(email: string, password: string, name?: strin
   const verificationTokenExpiry = generateTokenExpiry(24)
   const subscriptionStartsAt = new Date()
   const subscriptionEndsAt = new Date()
-  subscriptionEndsAt.setMonth(subscriptionEndsAt.getMonth() + 1)
+  subscriptionEndsAt.setDate(subscriptionEndsAt.getDate() + 14)
 
   const user = await createUser({
     email: email.toLowerCase(),
