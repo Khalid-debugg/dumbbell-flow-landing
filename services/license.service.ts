@@ -223,7 +223,6 @@ export async function getUserDevices(email: string) {
     daysRemaining,
     hasActiveSubscription,
     planTier: user.planTier,
-    subscriptionType: user.subscriptionType,
   }
 }
 

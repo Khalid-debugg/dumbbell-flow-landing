@@ -30,7 +30,6 @@ export async function findUserWithActiveDevicesByEmail(email: string) {
       emailVerified: true,
       licenseKey: true,
       subscriptionStatus: true,
-      subscriptionType: true,
       planTier: true,
       subscriptionStartsAt: true,
       subscriptionEndsAt: true,
@@ -121,7 +120,6 @@ export async function updateUserSubscription(
   id: string,
   data: {
     subscriptionStatus?: string
-    subscriptionType?: string
     planTier?: string
     deviceLimit?: number
   }

@@ -23,7 +23,6 @@ export default async function BillingPage({
     where: { id: session.user.id },
     select: {
       subscriptionStatus: true,
-      subscriptionType: true,
       planTier: true,
       deviceLimit: true,
       subscriptionEndsAt: true,
@@ -61,9 +60,7 @@ export default async function BillingPage({
   };
 
   const isTrialActive = user.subscriptionStatus === "trial";
-  const hasActiveSubscription =
-    user.subscriptionStatus === "active" &&
-    user.subscriptionType === "subscription";
+  const hasActiveSubscription = user.subscriptionStatus === "active";
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -95,14 +92,6 @@ export default async function BillingPage({
                 <p className="text-sm text-muted-foreground">Plan Tier</p>
                 <p className="text-lg font-semibold capitalize">
                   {user.planTier || "Trial"}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Subscription Type
-                </p>
-                <p className="text-lg font-semibold capitalize">
-                  {user.subscriptionType || "Trial"}
                 </p>
               </div>
               <div>

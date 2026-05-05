@@ -17,7 +17,6 @@ export async function getServerUser() {
       subscriptionStartsAt: true,
       subscriptionEndsAt: true,
       subscriptionStatus: true,
-      subscriptionType: true,
       planTier: true,
       deviceLimit: true,
       licenseKey: true,

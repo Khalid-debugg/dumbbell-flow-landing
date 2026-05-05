@@ -10,7 +10,6 @@ export interface LicenseValidationResult {
     email: string
     planTier: string | null
     subscriptionStatus: string
-    subscriptionType: string | null
     deviceLimit: number
     subscriptionEndsAt: Date
   }
@@ -82,7 +81,6 @@ export async function validateLicenseKey(
       email: user.email,
       planTier: user.planTier,
       subscriptionStatus: user.subscriptionStatus,
-      subscriptionType: user.subscriptionType,
       deviceLimit: user.deviceLimit,
       subscriptionEndsAt: user.subscriptionEndsAt
     }
@@ -92,7 +90,6 @@ export async function validateLicenseKey(
 interface UserData {
   subscriptionStatus: string;
   subscriptionEndsAt: Date;
-  subscriptionType: string | null;
 }
 
 function checkSubscriptionStatus(user: UserData): LicenseValidationResult {
