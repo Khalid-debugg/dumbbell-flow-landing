@@ -92,10 +92,3 @@ export function verifyChecksum(key: string): boolean {
   return seg5 === expectedChecksum
 }
 
-/**
- * Generate a license key synchronously (without DB check)
- * Use this only when you'll check uniqueness separately
- */
-export function generateLicenseKeySync(): string {
-  return createLicenseKey()
-}

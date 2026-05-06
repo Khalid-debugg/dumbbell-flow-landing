@@ -151,7 +151,7 @@ export async function validateLicense(licenseKey: string, deviceId: string) {
   await touchDevice(device.id)
 
   const { isAccessActive, isAccessExpired, daysRemaining } = computeSubscriptionStatus(user.subscriptionEndsAt)
-  const hasActiveSubscription = ['active', 'paid'].includes(user.subscriptionStatus)
+  const hasActiveSubscription = user.subscriptionStatus === 'active'
   const isValid = isAccessActive || hasActiveSubscription
 
   if (user.subscriptionStatus === 'trial' && isAccessExpired && !hasActiveSubscription) {
@@ -214,7 +214,7 @@ export async function getUserDevices(email: string) {
     isActive: device.isActive,
   }))
 
-  const hasActiveSubscription = ['active', 'paid'].includes(user.subscriptionStatus)
+  const hasActiveSubscription = user.subscriptionStatus === 'active'
 
   return {
     licenseKey: user.licenseKey,
